@@ -1,411 +1,2177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Messenger Group Chat</title>
+<meta charset="UTF-8"/>
+<title>Messenger Group Chat — iPhone 16 Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+/* Messenger Group Chat — iPhone 16 Pro Clone */
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.1.2/css/material-design-iconic-font.min.css">
-  <link rel="stylesheet" href="./style/style.css">
-  <link rel="stylesheet" href="./style/devices.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css">
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", sans-serif;
+  background: #f0f2f5;
+  color: #050505;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 48px;
+  padding: 40px 32px;
+  background:
+    radial-gradient(1200px 600px at 20% 0%, #e7f0ff 0%, transparent 55%),
+    radial-gradient(900px 500px at 90% 20%, #efe6ff 0%, transparent 60%),
+    #f0f2f5;
+}
+
+.phone-col {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 40px;
+}
+
+.panel-col {
+  flex: 1 1 auto;
+  max-width: 480px;
+  min-width: 360px;
+}
+
+/* ===== iPhone 16 Pro frame ===== */
+.iphone16 {
+  width: 390px;
+  height: 844px;
+  border-radius: 55px;
+  background: #0b0b0c;
+  padding: 11px;
+  position: relative;
+  box-shadow:
+    0 0 0 2px #3a3a3c,
+    0 40px 80px rgba(0, 0, 0, 0.22),
+    0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.iphone16::before {
+  /* subtle titanium rim highlight */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 55px;
+  pointer-events: none;
+  background: linear-gradient(145deg, rgba(255,255,255,0.09) 0%, transparent 25%, transparent 75%, rgba(255,255,255,0.06) 100%);
+}
+
+.iphone16 .screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 44px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+}
+
+.iphone16 .dynamic-island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 124px;
+  height: 36px;
+  border-radius: 20px;
+  background: #000;
+  z-index: 100;
+}
+
+.iphone16 .side-btn {
+  position: absolute;
+  background: #2a2a2c;
+  border-radius: 2px;
+}
+.iphone16 .side-btn.silent { left: -2px; top: 98px; width: 3px; height: 28px; }
+.iphone16 .side-btn.vol-up { left: -2px; top: 155px; width: 3px; height: 60px; }
+.iphone16 .side-btn.vol-down { left: -2px; top: 228px; width: 3px; height: 60px; }
+.iphone16 .side-btn.power { right: -2px; top: 186px; width: 3px; height: 96px; }
+
+/* ===== iOS Status Bar ===== */
+.ios-statusbar {
+  height: 54px;
+  padding: 18px 32px 0;
+  font-family: -apple-system, "SF Pro", "SF Pro Text", system-ui;
+  position: relative;
+  z-index: 10;
+  flex: 0 0 auto;
+}
+.ios-statusbar .ios-time {
+  position: absolute;
+  left: 32px;
+  top: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #000;
+  line-height: 1.3;
+}
+.ios-statusbar .ios-right {
+  position: absolute;
+  right: 28px;
+  top: 18px;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ios-statusbar .ios-right svg,
+.ios-statusbar .ios-right .ios-net-label {
+  display: inline-block !important;
+  vertical-align: middle;
+  margin: 0;
+  flex-shrink: 0;
+}
+.ios-statusbar .ios-right svg:first-child { margin-left: 0; }
+.ios-statusbar .ios-right .ios-battery-shell {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  flex-shrink: 0;
+}
+.ios-battery-shell {
+  width: 26px;
+  height: 13px;
+  border: 1px solid rgba(0,0,0,0.35);
+  border-radius: 3.5px;
+  position: relative;
+  padding: 1px;
+  box-sizing: border-box;
+}
+.ios-battery-shell::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 3.5px;
+  width: 2px;
+  height: 5px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 0 1.5px 1.5px 0;
+}
+.ios-battery-fill {
+  display: block;
+  height: 100%;
+  background: #000;
+  border-radius: 1.5px;
+}
+
+/* ===== Screen container ===== */
+.screen-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  position: relative;
+}
+
+/* ===== Messenger Header ===== */
+.msg-header {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 4px 12px 8px 6px;
+  background: #fff;
+  border-bottom: 1px solid #e4e6eb;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 5;
+}
+
+.msg-header .back {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0084ff;
+}
+.msg-header .avatar-stack {
+  position: relative;
+  width: 40px;
+  height: 32px;
+  flex: 0 0 40px;
+}
+.msg-header .avatar-stack .av {
+  position: absolute;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #e4e6eb;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.msg-header .avatar-stack .av.a1 {
+  width: 26px; height: 26px;
+  left: 0; bottom: 0; z-index: 2;
+}
+.msg-header .avatar-stack .av.a2 {
+  width: 22px; height: 22px;
+  right: 0; top: 0; z-index: 1;
+}
+.msg-header .avatar-stack.single .av.a1 {
+  width: 34px; height: 34px;
+  left: 3px; bottom: 0;
+}
+.msg-header .avatar-stack.single .av.a2 { display: none; }
+
+.msg-header .title-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 2px;
+}
+.msg-header .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  letter-spacing: -0.1px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+  outline: none;
+}
+.msg-header .subtitle {
+  font-size: 11px;
+  color: #65676b;
+  line-height: 1.2;
+  margin-top: 1px;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+
+.msg-header .action {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ===== Conversation area ===== */
+.conversation {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 10px 4px;
+  background: #fff;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+}
+.conversation::-webkit-scrollbar { display: none; }
+
+/* Intro / group start card */
+.chat-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 12px 18px;
+  gap: 8px;
+}
+.chat-intro .intro-avatars {
+  position: relative;
+  width: 80px;
+  height: 64px;
+}
+.chat-intro .intro-avatars .av {
+  position: absolute;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #e4e6eb;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.08);
+}
+.chat-intro .intro-avatars .av.a1 { width: 48px; height: 48px; left: 0; bottom: 0; z-index: 2; }
+.chat-intro .intro-avatars .av.a2 { width: 42px; height: 42px; right: 0; top: 0; z-index: 1; }
+.chat-intro .intro-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #050505;
+  margin-top: 6px;
+}
+.chat-intro .intro-sub {
+  font-size: 12px;
+  color: #65676b;
+}
+.chat-intro .intro-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: #e4e6eb;
+  color: #050505;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Date separator (inline) */
+.date-sep {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 6px;
+}
+.date-sep span {
+  font-size: 11px;
+  color: #65676b;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+/* ===== Message wrappers ===== */
+.msg-row {
+  display: flex;
+  align-items: flex-end;
+  margin-top: 2px;
+  position: relative;
+}
+.msg-row.received { justify-content: flex-start; }
+.msg-row.sent { justify-content: flex-end; }
+
+.msg-row.first { margin-top: 10px; }
+
+.msg-row .av-slot {
+  width: 28px;
+  height: 28px;
+  margin-right: 6px;
+  flex: 0 0 28px;
+  align-self: flex-end;
+}
+.msg-row .av-slot .av {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #e4e6eb;
+}
+.msg-row .av-slot.hidden .av { visibility: hidden; }
+
+.msg-row .stack {
+  display: flex;
+  flex-direction: column;
+  max-width: 72%;
+}
+.msg-row.sent .stack { align-items: flex-end; }
+.msg-row.received .stack { align-items: flex-start; }
+
+.sender-name {
+  font-size: 11px;
+  color: #65676b;
+  margin: 8px 0 3px 0;
+  padding-left: 12px;
+  font-weight: 400;
+}
+
+/* Bubbles */
+.bubble {
+  font-size: 15px;
+  line-height: 1.3;
+  padding: 8px 12px;
+  border-radius: 18px;
+  max-width: 100%;
+  word-wrap: break-word;
+  word-break: break-word;
+  position: relative;
+  margin-top: 2px;
+}
+.bubble[contenteditable="true"] { cursor: text; }
+.bubble[contenteditable="true"]:focus {
+  outline: 2px solid #0084ff55;
+  outline-offset: 1px;
+}
+.bubble[contenteditable="true"]:hover:not(:focus) {
+  outline: 1px dashed rgba(0,132,255,0.35);
+  outline-offset: 1px;
+}
+.bubble-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+.msg-row.sent .bubble-row { flex-direction: row-reverse; }
+.bubble-del {
+  opacity: 0;
+  transition: opacity 0.15s;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  border-radius: 50%;
+  color: #65676b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 24px;
+}
+.msg-row:hover .bubble-del { opacity: 1; }
+.bubble-del:hover { color: #e41e3f; background: #fff5f5; }
+.screen.--capturing .bubble-del { display: none !important; }
+.msg-row.received .bubble {
+  background: #f0f0f0;
+  color: #050505;
+}
+.msg-row.sent .bubble {
+  background: #0084ff;
+  color: #fff;
+}
+
+/* bubble-burst corner shaping — iOS Messenger specifics */
+/* received */
+.msg-row.received .bubble.first { border-radius: 18px 18px 18px 4px; }
+.msg-row.received .bubble.middle { border-radius: 4px 18px 18px 4px; }
+.msg-row.received .bubble.last { border-radius: 4px 18px 18px 18px; }
+.msg-row.received .bubble.solo { border-radius: 18px; }
+
+/* sent */
+.msg-row.sent .bubble.first { border-radius: 18px 18px 4px 18px; }
+.msg-row.sent .bubble.middle { border-radius: 18px 4px 4px 18px; }
+.msg-row.sent .bubble.last { border-radius: 18px 4px 18px 18px; }
+.msg-row.sent .bubble.solo { border-radius: 18px; }
+
+/* image + sticker bubbles */
+.bubble.image {
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
+  max-width: 225px;
+}
+.bubble.image img { display: block; width: 100%; height: auto; }
+.msg-row.received .bubble.image { border-radius: 18px; }
+.msg-row.sent .bubble.image { border-radius: 18px; }
+
+.bubble.sticker {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  max-width: 140px;
+}
+.bubble.sticker img { width: 100%; height: auto; display: block; }
+
+/* reply context above bubble */
+.reply-context {
+  margin-bottom: -10px;
+  padding: 6px 12px 16px;
+  border-radius: 14px;
+  background: #e4e6eb;
+  color: #65676b;
+  font-size: 12px;
+  max-width: 100%;
+  position: relative;
+  z-index: 0;
+  line-height: 1.25;
+}
+.msg-row.sent .reply-context { align-self: flex-end; }
+.reply-context .reply-to {
+  font-size: 10px;
+  font-weight: 600;
+  color: #65676b;
+  margin-bottom: 2px;
+}
+.reply-context .reply-text {
+  color: #050505;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+/* Reactions pill */
+.reactions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 5px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e4e6eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  font-size: 11px;
+  margin-top: -6px;
+  position: relative;
+  z-index: 1;
+  transform: translateY(-4px);
+  align-self: flex-start;
+}
+.msg-row.sent .reactions { align-self: flex-end; transform: translateY(-4px) translateX(-6px); }
+.msg-row.received .reactions { transform: translateY(-4px) translateX(6px); }
+.reactions .count {
+  color: #65676b;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* Seen indicator */
+.seen-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 2px 6px 0;
+  font-size: 10px;
+  color: #65676b;
+}
+.seen-row .seen-av {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #bcc0c4;
+  border: 1px solid #fff;
+}
+.seen-row .seen-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #0084ff;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+}
+.seen-row .seen-check.hollow {
+  background: #fff;
+  color: #0084ff;
+  border: 1px solid #0084ff;
+}
+
+/* Voice message */
+.bubble.voice {
+  min-width: 180px;
+  padding: 8px 12px;
+}
+.voice-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.voice-play {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 26px;
+}
+.msg-row.received .voice-play {
+  background: rgba(0,0,0,0.08);
+  color: #050505;
+}
+.voice-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  flex: 1;
+}
+.voice-wave span {
+  display: block;
+  width: 2.5px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.75;
+}
+.msg-row.received .voice-wave span { background: #b0b3b8; opacity: 1; }
+.voice-duration {
+  font-size: 11px;
+  opacity: 0.85;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Typing indicator */
+.typing-bubble {
+  background: #f0f0f0;
+  border-radius: 4px 18px 18px 18px;
+  padding: 10px 14px;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.typing-bubble .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8e8e93;
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+.typing-bubble .dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-bubble .dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing-bounce {
+  0%, 80%, 100% { opacity: 0.4; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* Call bubble */
+.call-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 6px;
+}
+.call-bubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #f0f0f0;
+  border-radius: 18px;
+  max-width: 84%;
+  color: #050505;
+  font-size: 13px;
+}
+.call-bubble.missed { background: #fdecea; color: #e41e3f; }
+.call-bubble .call-ic {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+}
+.call-bubble .call-txt { display: flex; flex-direction: column; line-height: 1.2; }
+.call-bubble .call-title { font-weight: 600; font-size: 12px; }
+.call-bubble .call-sub { font-size: 11px; opacity: 0.7; }
+
+/* Reply swipe hint */
+.swipe-hint {
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65676b;
+  font-size: 14px;
+  opacity: 0;
+}
+.msg-row.received:hover .swipe-hint { opacity: 0; } /* only shown on active drag — keeping hidden but wired */
+
+/* ===== Compose bar ===== */
+.compose {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 10px;
+  background: #fff;
+  border-top: 1px solid #e4e6eb;
+  flex: 0 0 auto;
+}
+.compose .c-ic {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0084ff;
+  cursor: pointer;
+  border-radius: 50%;
+  flex: 0 0 30px;
+}
+.compose .c-ic svg { width: 24px; height: 24px; }
+.compose .c-ic:hover { background: #f0f2f5; }
+.compose .c-input {
+  flex: 1 1 auto;
+  background: #f0f2f5;
+  border-radius: 18px;
+  padding: 6px 6px 6px 14px;
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  color: #65676b;
+  font-size: 15px;
+  text-decoration: none;
+}
+.compose .c-input .fake-text {
+  flex: 1;
+  text-decoration: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #65676b;
+  font-size: 15px;
+  font-family: inherit;
+  padding: 0;
+}
+.compose .c-input .c-emoji {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65676b;
+}
+.compose .c-input .c-emoji svg { width: 20px; height: 20px; }
+.compose .c-like {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0084ff;
+  flex: 0 0 30px;
+}
+.compose .c-like svg { width: 26px; height: 26px; }
+
+/* Home indicator */
+.home-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  border-radius: 100px;
+  background: #000;
+  z-index: 100;
+}
+
+/* ===== Control Panel (restyled Messenger style) ===== */
+.panel {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.05);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.panel h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #050505;
+  letter-spacing: -0.3px;
+}
+.panel .panel-sub {
+  font-size: 13px;
+  color: #65676b;
+  margin: 0 0 4px;
+}
+.panel section { display: flex; flex-direction: column; gap: 10px; }
+.panel .section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #65676b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.mem-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.mem-chip {
+  display: flex;
+  align-items: center;
+  background: #f0f2f5;
+  border-radius: 22px;
+  padding: 3px 10px 3px 3px;
+  gap: 8px;
+  cursor: default;
+  transition: background 0.15s;
+}
+.mem-chip:hover { background: #e4e6eb; }
+.mem-chip .mem-av {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #d2d4d7;
+  flex: 0 0 32px;
+  display: block;
+  overflow: hidden;
+}
+.mem-chip .mem-av-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.mem-chip .mem-av:hover .mem-av-overlay { opacity: 1; }
+.mem-chip .mem-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #050505;
+  outline: none;
+  max-width: 120px;
+}
+.mem-chip .mem-x {
+  margin-left: 2px;
+  color: #65676b;
+  font-size: 14px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mem-chip .mem-x:hover { background: #e4e6eb; color: #050505; }
+.mem-chip.add {
+  background: #e7f0ff;
+  color: #0084ff;
+  padding: 6px 12px;
+  gap: 4px;
+}
+.mem-chip.add:hover { background: #d8e7ff; }
+.mem-chip.add .material-symbols-outlined { font-size: 18px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  background: #0084ff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn:hover { background: #0073e0; }
+.btn.secondary { background: #e4e6eb; color: #050505; }
+.btn.secondary:hover { background: #d8dadf; }
+.btn.ghost { background: transparent; color: #0084ff; padding: 6px 10px; }
+.btn.ghost:hover { background: #e7f0ff; }
+.btn.sm { padding: 4px 10px; font-size: 12px; }
+
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #65676b;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field textarea {
+  background: #f0f2f5;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #050505;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.field input[type="text"]:focus,
+.field input[type="number"]:focus,
+.field select:focus,
+.field textarea:focus {
+  background: #fff;
+  border-color: #0084ff;
+}
+
+.segmented {
+  display: inline-flex;
+  background: #f0f2f5;
+  border-radius: 12px;
+  padding: 2px;
+}
+.segmented button {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.segmented button.active {
+  background: #fff;
+  color: #050505;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #050505;
+}
+.toggle .knob {
+  width: 36px;
+  height: 20px;
+  border-radius: 12px;
+  background: #d1d5db;
+  position: relative;
+  transition: background 0.2s;
+  flex: 0 0 36px;
+}
+.toggle .knob::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+.toggle.on .knob { background: #0084ff; }
+.toggle.on .knob::after { transform: translateX(16px); }
+
+.message-compose-panel {
+  background: #f7f8fa;
+  border-radius: 16px;
+  padding: 14px;
+}
+.message-compose-panel .who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.message-compose-panel .who-av {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #d2d4d7;
+  flex: 0 0 32px;
+}
+.message-compose-panel .who-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #050505;
+}
+.message-compose-panel .who-select {
+  margin-left: auto;
+}
+
+.panel-compose {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 4px 4px 4px 14px;
+  border: 1px solid #e4e6eb;
+}
+.panel-compose input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+  padding: 8px 0;
+  font-family: inherit;
+  background: transparent;
+}
+.panel-compose .pc-ic {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0084ff;
+  border-radius: 50%;
+}
+.panel-compose .pc-ic:hover { background: #e7f0ff; }
+.panel-compose .pc-send {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0084ff;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.panel-compose .pc-send:hover { background: #e7f0ff; }
+
+.option-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Project header */
+.app-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e4e6eb;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.app-header .brand {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #050505;
+  letter-spacing: -0.2px;
+}
+.app-header .brand .logo-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0084ff, #6a3cff);
+}
+.app-header .tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e7f0ff;
+  color: #0084ff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.app-header .spacer { flex: 1; }
+.app-header .h-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: #050505;
+  font-size: 13px;
+  font-weight: 500;
+  border: 0;
+  cursor: pointer;
+}
+.app-header .h-btn:hover { background: #f0f2f5; }
+.app-header .h-btn.primary {
+  background: #0084ff;
+  color: #fff;
+  font-weight: 600;
+}
+.app-header .h-btn.primary:hover { background: #0073e0; }
+.app-header .h-btn svg { flex: 0 0 auto; }
+.toast {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: #050505;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 3000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  animation: toast-in 0.2s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app-shell { padding-top: 80px; }
+
+/* Responsive — stack on small screens */
+@media (max-width: 980px) {
+  .app-shell {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+  .phone-col { position: static; }
+  .panel-col { width: 100%; max-width: 440px; }
+}
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<div id="root"></div>
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg,#0084ff,#6a3cff); position: fixed; top: 0; right: 0; left: 0; z-index: 1030;">
-  <div class="container-fluid">
-    <b><a class="navbar-brand" href="#">Messenger Group Chat</a></b>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarColor01">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" id="show-chat-room">Show chat-room</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" id="create-chat-room">Create chat-room</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" id="show-data-panel">Show data panel</a></li>
-      </ul>
-      <button id="capture_screen" type="button" class="btn btn-light" style="margin: 2px; display: flex; align-items: center;">
-        <b style="margin-right: 6px">Screen Shoot</b>
-        <span class="material-icons">center_focus_strong</span>
-      </button>
-      <button id="export_data" type="button" class="btn btn-light" style="margin: 2px; display: flex; align-items: center;">
-        <b style="margin-right: 6px">Export</b>
-        <span class="material-icons">system_update_alt</span>
-      </button>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<script type="text/babel">
+/* global React */
+// messenger.jsx — iPhone 16 Pro Messenger group chat UI
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+// --- helpers ---
+const PhBack = () => (
+  <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+    <path d="M12 2 3 11l9 9" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+// Authentic iOS Messenger icons (filled blue, matches real app)
+const PhPhone = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="#0084ff">
+    <path d="M19.44 13.55c-.3 0-.53.08-.79.09-.53.02-1.02-.02-1.43-.08-.43-.06-.79.1-1.03.36l-1.79 1.79c-2.3-1.3-4.22-3.2-5.53-5.5l1.79-1.79c.26-.25.42-.6.36-1.03-.06-.41-.1-.9-.08-1.43.01-.26.08-.49.09-.79A1.44 1.44 0 0 0 9.58 3.7H5.17A1.5 1.5 0 0 0 3.7 5.32C4.12 14.28 9.7 19.85 18.65 20.3c.82.04 1.52-.66 1.52-1.48V14.4a1.44 1.44 0 0 0-1.48-1.47z"/>
+  </svg>
+);
+const PhVideo = () => (
+  <svg width="28" height="24" viewBox="0 0 28 24" fill="#0084ff">
+    <rect x="1.2" y="4" width="16.8" height="16" rx="3.5"/>
+    <path d="M19.5 10.2 25.2 7.1a1 1 0 0 1 1.48.88v8.04a1 1 0 0 1-1.48.88l-5.7-3.1z"/>
+  </svg>
+);
+// Compose: solid blue filled buttons (match real Messenger)
+const PhPlus = () => (
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+    <circle cx="15" cy="15" r="14" fill="#0084ff"/>
+    <path d="M15 8v14M8 15h14" stroke="#fff" strokeWidth="2.4" strokeLinecap="round"/>
+  </svg>
+);
+const PhCamera = () => (
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="#0084ff">
+    <path d="M4 9.4C4 8.1 5 7 6.3 7h2.5c.5 0 1-.28 1.24-.72l.7-1.23c.25-.44.74-.72 1.25-.72h5.98c.5 0 1 .28 1.25.72l.7 1.23c.25.44.74.72 1.25.72h2.5C23.1 7 24 8.1 24 9.4v10.2c0 1.3-.9 2.4-2.24 2.4H6.25C5 22 4 20.9 4 19.6V9.4z"/>
+    <circle cx="14" cy="14.5" r="4.2" fill="#fff"/>
+    <circle cx="14" cy="14.5" r="2.6" fill="#0084ff"/>
+  </svg>
+);
+const PhPhoto = () => (
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="#0084ff">
+    <rect x="4" y="5.5" width="22" height="19" rx="3.2"/>
+    <circle cx="10.5" cy="11.5" r="1.9" fill="#fff"/>
+    <path d="M5 21.5 11 16l4.5 3.8L19 16l7 6.5v.5a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 23v-1.5z" fill="#fff"/>
+  </svg>
+);
+const PhMic = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="#0084ff">
+    <rect x="10" y="4" width="8" height="14" rx="4"/>
+    <path d="M5.5 13a8.5 8.5 0 0 0 17 0" stroke="#0084ff" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+    <path d="M14 21.5v3.5" stroke="#0084ff" strokeWidth="2.2" strokeLinecap="round"/>
+  </svg>
+);
+// Smiley INSIDE text field — gray outline
+const PhSmile = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9.5"/>
+    <circle cx="9" cy="10" r="0.8" fill="#65676b"/>
+    <circle cx="15" cy="10" r="0.8" fill="#65676b"/>
+    <path d="M8.5 14.5c.8 1.3 2 2 3.5 2s2.7-.7 3.5-2"/>
+  </svg>
+);
+// Thumbs-up — filled blue
+const PhThumb = () => (
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="#0084ff">
+    <path d="M2.5 13.5A1.7 1.7 0 0 1 4.2 11.8h2.8v13.5H4.2A1.7 1.7 0 0 1 2.5 23.6v-10zM8.7 11.8l4.4-7.3a2.3 2.3 0 0 1 4.3 1.7l-1 3.8a1.16 1.16 0 0 0 1.13 1.5h5.65a2.9 2.9 0 0 1 2.87 3.36l-1.4 8.48a2.9 2.9 0 0 1-2.87 2.41H8.7V11.8z"/>
+  </svg>
+);
+const PhPlay = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>;
+const PhPhoneSm = ({missed}) => <svg width="18" height="18" viewBox="0 0 24 24" fill={missed?"#e41e3f":"#65676b"}><path d="M20.01 15.38a11.87 11.87 0 0 1-3.72-.59 1.03 1.03 0 0 0-1.06.24l-1.57 1.97a15.02 15.02 0 0 1-6.59-6.58l1.96-1.66a1 1 0 0 0 .25-1.02A11.87 11.87 0 0 1 8.69 4 1 1 0 0 0 7.69 3H4.19A.99.99 0 0 0 3.19 4.04C3.56 14.26 11.74 22.44 21.96 22.81a.99.99 0 0 0 1.04-1V18.4c0-.55-.45-.99-.99-1.02z"/></svg>;
+
+// Avatar url — DiceBear supports CORS so html2canvas screenshots render faces.
+function avatarUrl(seed) {
+  const sanitized = encodeURIComponent(seed || 'anon');
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${sanitized}&radius=50&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+}
+function hashCode(s) {
+  let h = 0; for (let i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; }
+  return h;
+}
+
+// Status bar
+function IPhoneStatusBar({ time, battery = 82, network = 'wifi' }) {
+  const netGlyph = (() => {
+    if (network === 'wifi') {
+      return <svg width="15" height="11" viewBox="0 0 16 12"><path d="M8 11.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5zM12.1 6.9a5.8 5.8 0 0 0-8.2 0l1.3 1.3a4 4 0 0 1 5.6 0l1.3-1.3zM15 4a10 10 0 0 0-14 0l1.3 1.3a8.1 8.1 0 0 1 11.4 0L15 4z" fill="#000"/></svg>;
+    }
+    const label = network.toUpperCase();
+    return <span className="ios-net-label" style={{fontSize:13, fontWeight:600, letterSpacing:'-0.02em', color:'#000', lineHeight:1}}>{label}</span>;
+  })();
+  return (
+    <div className="ios-statusbar">
+      <div className="ios-time">{time}</div>
+      <div className="ios-right">
+        {/* signal */}
+        <svg width="17" height="11" viewBox="0 0 18 10"><rect x="0" y="6" width="3" height="4" rx="1" fill="#000"/><rect x="4" y="4" width="3" height="6" rx="1" fill="#000"/><rect x="8" y="2" width="3" height="8" rx="1" fill="#000"/><rect x="12" y="0" width="3" height="10" rx="1" fill="#000"/></svg>
+        {netGlyph}
+        <span className="ios-battery-shell">
+          <span className="ios-battery-fill" style={{width: `${battery}%`}} />
+        </span>
+      </div>
     </div>
-  </div>
-</nav>
+  );
+}
 
-<div class="form-popup-bg">
-  <div class="form-container">
-    <button id="btnCloseForm" class="close-button">X</button>
-    <h5 class="card-title">Change Content</h5>
-    <small style="color: rgb(156, 156, 156);">Fill the text box bellow</small>
-    <p></p>
-    <form id="change_content">
-      <div class="form-group">
-        <input name="input_value" type="text" class="form-control" id="input_value_content" />
+// Header
+function MessengerHeader({ groupName, subtitle, members, onNameChange, onSubChange }) {
+  const av1 = members[0]?.avatar || avatarUrl('a');
+  const av2 = members[1]?.avatar || avatarUrl('b');
+  const single = members.length < 2;
+  return (
+    <div className="msg-header">
+      <div className="back"><PhBack/></div>
+      <div className={`avatar-stack ${single ? 'single' : ''}`}>
+        <div className="av a1" style={{backgroundImage: `url(${av1})`}} />
+        <div className="av a2" style={{backgroundImage: `url(${av2})`}} />
       </div>
-    </form>
-  </div>
-</div>
-
-<main style="padding-top: 55px;">
-  <div class="page" style="padding: 12px;">
-
-    <!-- ============ iPhone X FRAME ============ -->
-    <div class="marvel-device iphone-x" id="device_model">
-      <div class="notch">
-        <div class="camera"></div>
-        <div class="speaker"></div>
+      <div className="title-wrap">
+        <span className="title" contentEditable suppressContentEditableWarning
+          onBlur={e => onNameChange(e.currentTarget.textContent)}>{groupName}</span>
+        <span className="subtitle" contentEditable suppressContentEditableWarning
+          onBlur={e => onSubChange(e.currentTarget.textContent)}>{subtitle}</span>
       </div>
-      <div class="top-bar"></div>
-      <div class="sleep"></div>
-      <div class="volume"></div>
-      <div class="overflow">
-        <div class="shadow shadow--tr"></div>
-        <div class="shadow shadow--tl"></div>
-        <div class="shadow shadow--br"></div>
-        <div class="shadow shadow--bl"></div>
-      </div>
-      <div class="inner-shadow"></div>
-      <div class="screen">
-        <div class="screen-container" id="screenshot_target">
+      <div className="action"><PhPhone/></div>
+      <div className="action"><PhVideo/></div>
+    </div>
+  );
+}
 
-          <div class="status-bar ios-statusbar">
-            <div class="ios-time">
-              <span class="time"></span>
-            </div>
-            <div class="ios-right">
-              <svg id="status-bar-sinal" viewBox="0 0 18 10" width="18" height="10" style="margin-right: 4px;"><rect x="0" y="6" width="3" height="4" rx="1" fill="#000"/><rect x="4" y="4" width="3" height="6" rx="1" fill="#000"/><rect x="8" y="2" width="3" height="8" rx="1" fill="#000"/><rect x="12" y="0" width="3" height="10" rx="1" fill="#000"/></svg>
-              <span id="status-bar-lte" style="font-size:11px; font-weight:600; margin-right:4px;">5G</span>
-              <svg id="status-bar-wifi" viewBox="0 0 16 12" width="15" height="11" style="margin-right: 5px;"><path d="M8 11.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5zM12.1 6.9a5.8 5.8 0 0 0-8.2 0l1.3 1.3a4 4 0 0 1 5.6 0l1.3-1.3zM15 4a10 10 0 0 0-14 0l1.3 1.3a8.1 8.1 0 0 1 11.4 0L15 4z" fill="#000"/></svg>
-              <div class="ios-battery">
-                <span id="battery_percentage" contentEditable="true" class="ios-battery-pct">85%</span>
-                <span class="ios-battery-shell"><span class="ios-battery-fill" id="status-bar-battery" data-battery="2"></span></span>
-              </div>
-              <span id="status-bar-sinal2" style="display:none;"></span>
-              <span id="status-bar-vibrate" style="display:none;"></span>
-            </div>
-          </div>
+// Voice waveform
+function VoiceWave({ bars = 28, sent }) {
+  const heights = useMemo(() => Array.from({length: bars}, (_, i) => {
+    const t = i / bars;
+    const base = 6 + Math.sin(t * Math.PI * 3) * 5 + Math.cos(t * Math.PI * 7) * 3;
+    return Math.max(4, Math.min(18, base + (i % 4) * 1.5));
+  }), [bars]);
+  return (
+    <div className="voice-wave">
+      {heights.map((h, i) => <span key={i} style={{height: h}} />)}
+    </div>
+  );
+}
 
-          <div class="chat">
-            <div class="chat-container">
-
-              <!-- iOS Messenger header -->
-              <div class="user-bar ios-header">
-                <div class="back ios-back"><i class="zmdi zmdi-chevron-left"></i></div>
-                <div class="ios-center">
-                  <div class="group-avatar-stack" id="group-avatar-stack">
-                    <!-- avatars injected by JS -->
-                  </div>
-                  <span id="chat_name" contentEditable="true" class="ios-chat-name">Group Chat</span>
-                  <span class="status ios-chat-sub" id="chat_status" contentEditable="true">Active now</span>
-                </div>
-                <div class="ios-header-actions">
-                  <div class="actions">
-                    <svg id="voice_call_btn" class="action-icon" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M20.01 15.38a11.87 11.87 0 0 1-3.72-.59 1.03 1.03 0 0 0-1.06.24l-1.57 1.97a15.02 15.02 0 0 1-6.59-6.58l1.96-1.66a1 1 0 0 0 .25-1.02A11.87 11.87 0 0 1 8.69 4 1 1 0 0 0 7.69 3H4.19A.99.99 0 0 0 3.19 4.04C3.56 14.26 11.74 22.44 21.96 22.81a.99.99 0 0 0 1.04-1V18.4c0-.55-.45-.99-.99-1.02z"/></svg>
-                  </div>
-                  <div class="actions">
-                    <svg id="video_call_btn" class="action-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="#0084ff" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Conversation area -->
-              <div class="conversation">
-                <div id="scroll_arrow_button" style="position: absolute; right: 10px; bottom: 76px; z-index: 1; display: none;">
-                  <div class="scroll-down-btn"><i class="zmdi zmdi-chevron-down"></i></div>
-                </div>
-                <div class="float-message-date" id="top-nav-chat-date" contentEditable="true">Today</div>
-                <div class="conversation-container" id="conversation_container">
-                  <!-- messages injected here -->
-                </div>
-
-                <!-- iOS Messenger compose bar -->
-                <form class="bottom_icon" id="form_screenshot_bar">
-                  <div class="compose-left-icons">
-                    <div class="compose-ic compose-ic-plus" title="More"><span class="material-icons">add_circle</span></div>
-                    <div class="compose-ic compose-ic-camera" title="Camera"><span class="material-icons">photo_camera</span></div>
-                    <div class="compose-ic compose-ic-photo" title="Photos"><span class="material-icons">photo</span></div>
-                    <div class="compose-ic compose-ic-mic" title="Voice"><span class="material-icons">mic</span></div>
-                  </div>
-                  <div class="compose-input-wrap">
-                    <span class="input-msg-fake" id="input_text_screenshot">Aa</span>
-                    <div class="compose-ic compose-ic-inline" title="Stickers"><span class="material-icons" style="font-size:22px; color:#0084ff;">sentiment_satisfied_alt</span></div>
-                  </div>
-                  <div class="compose-send compose-like" title="Like"><span class="material-icons" style="color:#0084ff; font-size:28px;">thumb_up</span></div>
-                </form>
-              </div>
-            </div>
-          </div>
-
+// Bubble content per type
+function BubbleBody({ msg, sent, onEdit }) {
+  if (msg.type === 'image') {
+    return <div className="bubble image"><img src={msg.src} alt="" crossOrigin="anonymous" /></div>;
+  }
+  if (msg.type === 'sticker') {
+    return <div className="bubble sticker"><img src={msg.src} alt="" crossOrigin="anonymous" /></div>;
+  }
+  if (msg.type === 'voice') {
+    return (
+      <div className={`bubble voice ${msg.pos || 'solo'}`}>
+        <div className="voice-inner">
+          <div className="voice-play"><PhPlay/></div>
+          <VoiceWave sent={sent} />
+          <span className="voice-duration">{msg.duration || '0:14'}</span>
         </div>
       </div>
-    </div>
+    );
+  }
+  // Editable text bubble
+  const handleBlur = (e) => {
+    const txt = e.currentTarget.textContent;
+    if (onEdit && txt !== msg.text) onEdit(txt);
+  };
+  return (
+    <div
+      className={`bubble ${msg.pos || 'solo'}`}
+      contentEditable={!!onEdit}
+      suppressContentEditableWarning
+      onBlur={handleBlur}
+      onKeyDown={e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); }
+        if (e.key === 'Escape') { e.currentTarget.textContent = msg.text; e.currentTarget.blur(); }
+      }}
+      spellCheck={false}
+    >{msg.text}</div>
+  );
+}
 
-    <!-- ============ CONTROL PANEL ============ -->
-    <div class="form-container" id="chat_panel" style="margin-left: 30px;">
-      <h3 style="text-align: center;">Conversation Panel</h3>
-      <br/>
+// Single message row
+function MessageRow({ msg, sent, showAvatar, showName, senderName, senderAvatar, onEdit, onDelete }) {
+  const pos = msg.pos || 'solo';
+  const cls = `msg-row ${sent ? 'sent' : 'received'} ${pos === 'first' || pos === 'solo' ? 'first' : ''}`;
+  return (
+    <>
+      {showName && !sent && <div className="sender-name">{senderName}</div>}
+      <div className={cls}>
+        {!sent && (
+          <div className={`av-slot ${showAvatar ? '' : 'hidden'}`}>
+            <div className="av" style={{backgroundImage: `url(${senderAvatar})`}} />
+          </div>
+        )}
+        <div className="stack">
+          {msg.replyTo && (
+            <div className="reply-context">
+              <div className="reply-to">{msg.replyTo.name}</div>
+              <div className="reply-text">{msg.replyTo.text}</div>
+            </div>
+          )}
+          <div className="bubble-row">
+            <BubbleBody msg={msg} sent={sent} onEdit={onEdit} />
+            {onDelete && (
+              <button className="bubble-del" onClick={onDelete} title="Delete this message" aria-label="Delete message">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              </button>
+            )}
+          </div>
+          {msg.reactions && msg.reactions.length > 0 && (
+            <div className="reactions">
+              {msg.reactions.map((r, i) => <span key={i}>{r.emoji}</span>)}
+              {msg.reactions.length > 1 && <span className="count">{msg.reactions.length}</span>}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
 
-      <div class="group-members-wrap">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <b style="color: #fff;">Group Members</b>
-          <button type="button" class="btn btn-primary btn-sm" id="add_user_btn">
-            <span class="material-icons" style="font-size: 16px; vertical-align: middle;">person_add</span>
-            Add User
+// Date divider
+function DateSep({ label }) {
+  return <div className="date-sep"><span>{label}</span></div>;
+}
+
+// Call bubble
+function CallBubble({ missed, title, sub, onEditTitle, onEditSub, onDelete }) {
+  return (
+    <div className="call-wrap">
+      <div className={`call-bubble ${missed ? 'missed' : ''}`}>
+        <div className="call-ic"><PhPhoneSm missed={missed}/></div>
+        <div className="call-txt">
+          <div
+            className="call-title"
+            contentEditable={!!onEditTitle}
+            suppressContentEditableWarning
+            spellCheck={false}
+            onBlur={e => onEditTitle && onEditTitle(e.currentTarget.textContent)}
+            onKeyDown={e => { if (e.key==='Enter'){ e.preventDefault(); e.currentTarget.blur(); } }}
+          >{title}</div>
+          <div
+            className="call-sub"
+            contentEditable={!!onEditSub}
+            suppressContentEditableWarning
+            spellCheck={false}
+            onBlur={e => onEditSub && onEditSub(e.currentTarget.textContent)}
+            onKeyDown={e => { if (e.key==='Enter'){ e.preventDefault(); e.currentTarget.blur(); } }}
+          >{sub}</div>
+        </div>
+        {onDelete && (
+          <button className="bubble-del" onClick={onDelete} title="Delete call" style={{opacity:0}} aria-label="Delete call">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           </button>
-        </div>
-        <small style="color: rgb(156, 156, 156);">Add unlimited members to the group. Each member has their own profile picture and can send messages.</small>
-        <div id="members_list" class="members-list">
-          <!-- users injected here -->
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Typing indicator
+function TypingIndicator({ avatar }) {
+  return (
+    <div className="msg-row received first" style={{marginTop: 8}}>
+      <div className="av-slot">
+        <div className="av" style={{backgroundImage: `url(${avatar})`}} />
+      </div>
+      <div className="stack">
+        <div className="typing-bubble">
+          <span className="dot"/><span className="dot"/><span className="dot"/>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <br/>
+// Conversation
+function Conversation({ messages, members, meId, showTyping, typingBy, groupName, onEditMsg, onDeleteMsg }) {
+  const memberById = Object.fromEntries(members.map(m => [m.id, m]));
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, showTyping]);
 
-      <div class="compose-section" style="background: #fff; border-radius: 16px; padding: 16px;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <b style="color: #350e51;">Chatting as:</b>
-            <select id="active_user_select" class="form-select" style="display: inline-block; width: auto; margin-left: 8px;">
-              <!-- options injected -->
+  // compute pos (first/middle/last/solo) based on same-sender adjacency
+  const rows = useMemo(() => {
+    const out = [];
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      if (m.type === 'date' || m.type === 'call') { out.push({...m, kind: m.type}); continue; }
+      const prev = messages[i-1];
+      const next = messages[i+1];
+      const sameAsPrev = prev && prev.from === m.from && prev.type !== 'date' && prev.type !== 'call' && m.type !== 'image' && m.type !== 'sticker' && prev.type !== 'image' && prev.type !== 'sticker';
+      const sameAsNext = next && next.from === m.from && next.type !== 'date' && next.type !== 'call' && m.type !== 'image' && m.type !== 'sticker' && next.type !== 'image' && next.type !== 'sticker';
+      let pos = 'solo';
+      if (sameAsPrev && sameAsNext) pos = 'middle';
+      else if (sameAsPrev) pos = 'last';
+      else if (sameAsNext) pos = 'first';
+      out.push({...m, pos, showAvatar: !sameAsNext, showName: !sameAsPrev && m.from !== meId});
+    }
+    return out;
+  }, [messages, meId]);
+
+  return (
+    <div className="conversation" ref={scrollRef}>
+      <div className="chat-intro">
+        <div className="intro-avatars">
+          <div className="av a1" style={{backgroundImage: `url(${members[0]?.avatar})`}} />
+          <div className="av a2" style={{backgroundImage: `url(${members[1]?.avatar})`}} />
+        </div>
+        <div className="intro-name">{groupName}</div>
+        <div className="intro-sub">Messenger · {members.length} members</div>
+        <div className="intro-btn">View group</div>
+      </div>
+
+      {rows.map((r, i) => {
+        if (r.kind === 'date') return <DateSep key={i} label={r.label} />;
+        if (r.kind === 'call') return <CallBubble key={i} missed={r.missed} title={r.title} sub={r.sub}
+          onEditTitle={onEditMsg ? (text) => onEditMsg(r.id, {title: text}) : undefined}
+          onEditSub={onEditMsg ? (text) => onEditMsg(r.id, {sub: text}) : undefined}
+          onDelete={onDeleteMsg ? () => onDeleteMsg(r.id) : undefined}
+        />;
+        const sent = r.from === meId;
+        const sender = memberById[r.from];
+        return (
+          <React.Fragment key={i}>
+            <MessageRow
+              msg={r}
+              sent={sent}
+              showAvatar={r.showAvatar}
+              showName={r.showName && members.length > 2}
+              senderName={sender?.name}
+              senderAvatar={sender?.avatar}
+              onEdit={onEditMsg ? (text) => onEditMsg(r.id, text) : undefined}
+              onDelete={onDeleteMsg ? () => onDeleteMsg(r.id) : undefined}
+            />
+            {r.seenBy && r.seenBy.length > 0 && (
+              <div className="seen-row">
+                {r.seenBy.slice(0, 3).map((uid, idx) => (
+                  <div key={idx} className="seen-av" style={{backgroundImage: `url(${memberById[uid]?.avatar})`}} />
+                ))}
+              </div>
+            )}
+            {r.delivered && sent && !r.seenBy && (
+              <div className="seen-row">
+                <span className="seen-check hollow">✓</span>
+                <span>Delivered</span>
+              </div>
+            )}
+          </React.Fragment>
+        );
+      })}
+
+      {showTyping && <TypingIndicator avatar={memberById[typingBy]?.avatar} />}
+    </div>
+  );
+}
+
+// Compose bar
+function ComposeBar() {
+  return (
+    <div className="compose">
+      <div className="c-ic"><PhPlus/></div>
+      <div className="c-ic"><PhCamera/></div>
+      <div className="c-ic"><PhPhoto/></div>
+      <div className="c-ic"><PhMic/></div>
+      <div className="c-input">
+        <span className="fake-text">Aa</span>
+        <span className="c-emoji"><PhSmile/></span>
+      </div>
+      <div className="c-like"><PhThumb/></div>
+    </div>
+  );
+}
+
+// Full phone
+function MessengerPhone({ state, setState }) {
+  return (
+    <div className="iphone16">
+      <div className="side-btn silent"/>
+      <div className="side-btn vol-up"/>
+      <div className="side-btn vol-down"/>
+      <div className="side-btn power"/>
+      <div className="dynamic-island"/>
+      <div className="screen">
+        <div className="screen-inner">
+          <IPhoneStatusBar time={state.statusTime} battery={state.battery} network={state.network} />
+          <MessengerHeader
+            groupName={state.groupName}
+            subtitle={state.subtitle}
+            members={state.members}
+            onNameChange={v => setState(s => ({...s, groupName: v}))}
+            onSubChange={v => setState(s => ({...s, subtitle: v}))}
+          />
+          <Conversation
+            messages={state.messages}
+            members={state.members}
+            meId={state.meId}
+            showTyping={state.typingOn}
+            typingBy={state.typingBy}
+            groupName={state.groupName}
+            onEditMsg={(id, patch) => setState(s => ({
+              ...s,
+              messages: s.messages.map(m => m.id === id ? {...m, ...(typeof patch === 'string' ? {text: patch} : patch)} : m)
+            }))}
+            onDeleteMsg={(id) => setState(s => ({
+              ...s,
+              messages: s.messages.filter(m => m.id !== id)
+            }))}
+          />
+          <ComposeBar />
+          <div className="home-indicator" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { MessengerPhone, avatarUrl });
+
+
+/* global React */
+// panel.jsx — Messenger-style control panel
+
+function Toggle({ on, onChange, label }) {
+  return (
+    <div className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)}>
+      <span className="knob"/>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function Segmented({ options, value, onChange }) {
+  return (
+    <div className="segmented">
+      {options.map(o => (
+        <button key={o.value} className={value === o.value ? 'active' : ''} onClick={() => onChange(o.value)}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function MembersSection({ members, setMembers, meId, setMeId }) {
+  const add = () => {
+    const n = members.length + 1;
+    const newM = {
+      id: 'u' + Date.now(),
+      name: `Member ${n}`,
+      avatar: avatarUrl('new' + Date.now()),
+    };
+    setMembers([...members, newM]);
+  };
+  const remove = (id) => {
+    if (members.length <= 2) return;
+    setMembers(members.filter(m => m.id !== id));
+    if (meId === id) setMeId(members[0].id);
+  };
+  const rename = (id, name) => setMembers(members.map(m => m.id === id ? {...m, name} : m));
+  const randomizeAv = (id) => {
+    const seed = 'av' + Date.now();
+    setMembers(members.map(m => m.id === id ? {...m, avatar: avatarUrl(seed)} : m));
+  };
+  const uploadAv = (id, file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setMembers(members.map(m => m.id === id ? {...m, avatar: ev.target.result} : m));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <section>
+      <div className="row between">
+        <div className="section-title" style={{margin:0}}>Group members</div>
+        <button className="btn sm secondary" onClick={add}>+ Add</button>
+      </div>
+      <div className="mem-list">
+        {members.map(m => (
+          <div key={m.id} className="mem-chip">
+            <label className="mem-av" style={{backgroundImage:`url(${m.avatar})`, cursor:'pointer', position:'relative'}} title="Click to upload photo · Shift+click to randomize"
+              onClick={(e) => { if (e.shiftKey) { e.preventDefault(); randomizeAv(m.id); } }}>
+              <div className="mem-av-overlay">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM20 4h-3.2L15 2H9L7.2 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
+              </div>
+              <input type="file" accept="image/*" style={{display:'none'}} onChange={e => uploadAv(m.id, e.target.files[0])} />
+            </label>
+            <span className="mem-name" contentEditable suppressContentEditableWarning
+              onBlur={e => rename(m.id, e.currentTarget.textContent)}>{m.name}</span>
+            <span className="mem-x" onClick={() => remove(m.id)}>×</span>
+          </div>
+        ))}
+      </div>
+      <div className="field" style={{marginTop:8}}>
+        <label>You are posting as</label>
+        <select value={meId} onChange={e => setMeId(e.target.value)}>
+          {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+        </select>
+      </div>
+    </section>
+  );
+}
+
+function SendSection({ state, setState }) {
+  const [text, setText] = usePState('');
+  const send = (type = 'text', extra = {}) => {
+    if (type === 'text' && !text.trim()) return;
+    const msg = {
+      id: 'm' + Date.now(),
+      from: state.meId,
+      type,
+      text: type === 'text' ? text.trim() : undefined,
+      time: state.statusTime,
+      ...extra,
+    };
+    setState(s => ({...s, messages: [...s.messages, msg]}));
+    setText('');
+  };
+  const sendFromFile = (type, file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => send(type, { src: ev.target.result });
+    reader.readAsDataURL(file);
+  };
+  const me = state.members.find(m => m.id === state.meId);
+  return (
+    <section>
+      <div className="section-title">Compose</div>
+      <div className="message-compose-panel">
+        <div className="who">
+          <div className="who-av" style={{backgroundImage:`url(${me?.avatar})`}} />
+          <span className="who-name">{me?.name}</span>
+        </div>
+        <div className="panel-compose">
+          <input
+            placeholder="Type a message…"
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') send('text'); }}
+          />
+          <label className="pc-ic" title="Upload image from device" style={{cursor:'pointer'}}>
+            🖼️
+            <input type="file" accept="image/*" style={{display:'none'}}
+              onChange={e => { sendFromFile('image', e.target.files[0]); e.target.value=''; }} />
+          </label>
+          <label className="pc-ic" title="Upload sticker / emoji image from device" style={{cursor:'pointer'}}>
+            😀
+            <input type="file" accept="image/*,image/gif,image/webp" style={{display:'none'}}
+              onChange={e => { sendFromFile('sticker', e.target.files[0]); e.target.value=''; }} />
+          </label>
+          <span className="pc-ic" title="Send voice note" onClick={() => send('voice', { duration: '0:' + (10 + Math.floor(Math.random()*40)) })}>🎙️</span>
+          <span className="pc-send" onClick={() => send('text')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0084ff"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </span>
+        </div>
+        <div style={{fontSize:11, color:'#65676b', marginTop:6, paddingLeft:4}}>
+          🖼️ uploads a photo · 😀 uploads an emoji/sticker image from your device
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const { useState: usePState, useEffect: usePEffect, useRef: usePRef } = React;
+
+function DatePickerChip({ onPick }) {
+  const [open, setOpen] = usePState(false);
+  const initDate = new Date(Date.now() - 2*24*60*60*1000);
+  const [year, setYear] = usePState(initDate.getFullYear());
+  const [month, setMonth] = usePState(initDate.getMonth()); // 0-11
+  const [day, setDay] = usePState(initDate.getDate());
+  const [hour, setHour] = usePState(initDate.getHours());
+  const [minute, setMinute] = usePState(initDate.getMinutes());
+  const ref = usePRef(null);
+  usePEffect(() => {
+    if (!open) return;
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const confirm = () => {
+    const d = new Date(year, month, Math.min(day, daysInMonth), hour, minute);
+    onPick(d.toISOString());
+    setOpen(false);
+  };
+  const quickYear = (offset) => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + offset);
+    setYear(d.getFullYear()); setMonth(d.getMonth()); setDay(d.getDate());
+  };
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const yearList = [];
+  const curYear = new Date().getFullYear();
+  for (let y = curYear; y >= curYear - 15; y--) yearList.push(y);
+  const selectSx = {padding:'7px 8px', border:'1px solid #e4e6eb', borderRadius:8, fontSize:13, background:'#fff', flex:1, minWidth:0};
+  return (
+    <div ref={ref} style={{position:'relative', display:'inline-block'}}>
+      <button className="btn secondary sm" onClick={() => setOpen(o => !o)}>🗓 Date</button>
+      {open && (
+        <div style={{
+          position:'absolute', top:'calc(100% + 6px)', left:0, zIndex:50,
+          background:'#fff', borderRadius:14, boxShadow:'0 12px 32px rgba(0,0,0,0.2)',
+          border:'1px solid #e4e6eb', padding:14, width:300,
+        }}>
+          <div style={{fontSize:13, fontWeight:700, marginBottom:10, color:'#050505'}}>Insert date separator</div>
+          <div style={{display:'flex', gap:4, marginBottom:10, flexWrap:'wrap'}}>
+            {[-1,-2,-3,-5,-10].map(y => (
+              <button key={y} className="btn ghost sm" style={{padding:'3px 8px', fontSize:11}} onClick={() => quickYear(y)}>{Math.abs(y)}y ago</button>
+            ))}
+          </div>
+          <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Date</label>
+          <div style={{display:'flex', gap:6, marginBottom:10}}>
+            <select value={month} onChange={e => setMonth(+e.target.value)} style={selectSx}>
+              {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+            </select>
+            <select value={day} onChange={e => setDay(+e.target.value)} style={{...selectSx, flex:'0 0 70px'}}>
+              {Array.from({length: daysInMonth}, (_, i) => i+1).map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <select value={year} onChange={e => setYear(+e.target.value)} style={{...selectSx, flex:'0 0 90px'}}>
+              {yearList.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
-          <div class="user-nav">
-            <div class="actions">
-              <svg id="ua_voice_call_btn" class="action-icon-panel" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M20.01 15.38a11.87 11.87 0 0 1-3.72-.59 1.03 1.03 0 0 0-1.06.24l-1.57 1.97a15.02 15.02 0 0 1-6.59-6.58l1.96-1.66a1 1 0 0 0 .25-1.02A11.87 11.87 0 0 1 8.69 4 1 1 0 0 0 7.69 3H4.19A.99.99 0 0 0 3.19 4.04C3.56 14.26 11.74 22.44 21.96 22.81a.99.99 0 0 0 1.04-1V18.4c0-.55-.45-.99-.99-1.02z"/></svg>
-            </div>
-            <div class="actions">
-              <svg id="ua_video_call_btn" class="action-icon-panel" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-            </div>
+          <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Time</label>
+          <div style={{display:'flex', gap:6, marginBottom:12, alignItems:'center'}}>
+            <select value={hour} onChange={e => setHour(+e.target.value)} style={selectSx}>
+              {Array.from({length: 24}, (_, i) => i).map(h => (
+                <option key={h} value={h}>{((h%12)||12)} {h<12?'AM':'PM'}</option>
+              ))}
+            </select>
+            <span style={{color:'#65676b'}}>:</span>
+            <select value={minute} onChange={e => setMinute(+e.target.value)} style={selectSx}>
+              {Array.from({length: 60}, (_, i) => i).map(m => (
+                <option key={m} value={m}>{m.toString().padStart(2,'0')}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{display:'flex', gap:6, justifyContent:'flex-end'}}>
+            <button className="btn ghost sm" onClick={() => setOpen(false)}>Cancel</button>
+            <button className="btn primary sm" onClick={confirm}>Insert</button>
           </div>
         </div>
-        <p></p>
-        <form class="bottom_icon" id="form_active_user">
-          <div style="flex: 1;">
-            <div class="conversation-compose-input">
-              <input class="input-msg-actor" id="input_text_active" name="input_message_active" placeholder="Type a message..." autocomplete="off">
-            </div>
-            <div class="conversation-compose panel">
-              <div class="chat-icon" title="Sticker"><span class="material-icons" id="sticker_btn" style="color:#0084ff; cursor: pointer;">sentiment_satisfied_alt</span></div>
-              <div class="chat-icon" title="Photo"><span class="material-icons" id="photo_btn" style="color:#0084ff; cursor: pointer;">photo</span></div>
-              <div class="chat-icon" title="Camera"><span class="material-icons" style="color:#0084ff;">photo_camera</span></div>
-              <div class="chat-icon" title="GIF"><span class="material-icons" style="color:#0084ff;">gif</span></div>
-              <div class="chat-icon" title="File"><span class="material-icons" style="color:#0084ff;">attach_file</span></div>
-              <div class="chat-icon" title="More"><span class="material-icons" style="color:#0084ff;">more_horiz</span></div>
+      )}
+    </div>
+  );
+}
 
-              <input type='file' id="imgInpActive" onclick="this.value=null;" accept="image/*" hidden />
-              <input type='file' id="stickerInpActive" onclick="this.value=null;" accept="image/*" hidden />
-            </div>
-          </div>
-          <div id="voice_button_active" title="Send voice" style="margin-left: 10px;">
-            <div class="voice-record-btn"><span class="material-icons" style="color: #fff; font-size: 22px;">mic</span></div>
-          </div>
-        </form>
+function AddExtrasSection({ state, setState }) {
+  const addCall = (missed) => {
+    const msg = { id:'c'+Date.now(), type:'call', missed, title: missed? 'Missed voice call' : 'Voice call', sub: missed ? 'You missed a call' : '2 min 34 sec' };
+    setState(s => ({...s, messages:[...s.messages, msg]}));
+  };
+  const addDate = (isoDateTime) => {
+    const dt = isoDateTime ? new Date(isoDateTime) : new Date(Date.now() - 2*24*60*60*1000);
+    const today = new Date();
+    const diffDays = Math.floor((today.setHours(0,0,0,0) - new Date(dt).setHours(0,0,0,0)) / (24*60*60*1000));
+    const time = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }); // "4:07 PM"
+    let label;
+    if (diffDays === 0) label = `Today ${time}`;
+    else if (diffDays === 1) label = `Yesterday ${time}`;
+    else if (diffDays < 7 && diffDays > 0) {
+      // "MON AT 4:07 PM"
+      label = `${dt.toLocaleDateString('en-US', { weekday:'short' }).toUpperCase()} AT ${time}`;
+    } else {
+      // "APR 18 AT 4:07 PM"
+      label = `${dt.toLocaleDateString('en-US', { month:'short', day:'numeric' }).toUpperCase()} AT ${time}`;
+    }
+    setState(s => ({...s, messages:[...s.messages, { id:'d'+Date.now(), type:'date', label, iso: dt.toISOString() }]}));
+  };
+  const addReaction = () => {
+    const emojis = ['❤️','😂','👍','😮','😢','🔥'];
+    const pick = emojis[Math.floor(Math.random()*emojis.length)];
+    setState(s => {
+      const msgs = [...s.messages];
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].type !== 'date' && msgs[i].type !== 'call') {
+          msgs[i] = {...msgs[i], reactions: [...(msgs[i].reactions||[]), {emoji: pick}]};
+          break;
+        }
+      }
+      return {...s, messages: msgs};
+    });
+  };
+  const addReply = () => {
+    setState(s => {
+      const lastReal = [...s.messages].reverse().find(m => m.type !== 'date' && m.type !== 'call');
+      if (!lastReal) return s;
+      const replyTo = {
+        name: s.members.find(x => x.id === lastReal.from)?.name || 'Unknown',
+        text: lastReal.text || (lastReal.type === 'image' ? 'Photo' : lastReal.type === 'sticker' ? 'Sticker' : lastReal.type === 'voice' ? 'Voice message' : ''),
+      };
+      return {...s, messages:[...s.messages, { id:'r'+Date.now(), from: s.meId, type:'text', text:'Totally agree 🙌', replyTo }]};
+    });
+  };
+  const markSeen = () => {
+    setState(s => {
+      const msgs = [...s.messages];
+      const others = s.members.filter(m => m.id !== s.meId).map(m => m.id).slice(0, 3);
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].from === s.meId && msgs[i].type !== 'date' && msgs[i].type !== 'call') {
+          msgs[i] = {...msgs[i], seenBy: others};
+          break;
+        }
+      }
+      return {...s, messages: msgs};
+    });
+  };
+  const clearChat = () => setState(s => ({...s, messages: []}));
+  const undo = () => setState(s => ({...s, messages: s.messages.slice(0, -1)}));
+
+  return (
+    <section>
+      <div className="section-title">Add to chat</div>
+      <div className="row">
+        <button className="btn secondary sm" onClick={addReply}>↩︎ Reply</button>
+        <button className="btn secondary sm" onClick={addReaction}>❤️ React</button>
+        <button className="btn secondary sm" onClick={markSeen}>✓ Mark seen</button>
+        <button className="btn secondary sm" onClick={() => addCall(false)}>📞 Call</button>
+        <button className="btn secondary sm" onClick={() => addCall(true)}>☎️ Missed</button>
+        <DatePickerChip onPick={addDate} />
+        <button className="btn ghost sm" onClick={undo}>Undo</button>
       </div>
+    </section>
+  );
+}
 
-      <div style="padding-bottom: 60px; margin-top: 32px; border-radius: 16px;">
-        <h5 class="card-title" style="color: #00ffff; text-align: center;">Chat Status</h5>
-        <small class="small-text-desc">Change all options in form bellow</small>
-        <p></p>
-        <div style="display: flex;">
-          <div class="msg_status">
-            <b>Message Option:</b><br/>
-            <input type="radio" name="messageStatus" value="delivered" id="status-delivered" checked>
-            <label for="status-delivered">Delivered</label><br/>
-            <input type="radio" name="messageStatus" value="read" id="status-read">
-            <label for="status-read">Seen</label>
-          </div>
-          <div class="msg_status" style="margin-left: 6%;">
-            <b>Call Status:</b><br/>
-            <input type="radio" name="callStatus" value="on" id="call_done" checked>
-            <label for="call_done">Done</label><br/>
-            <input type="radio" name="callStatus" value="off" id="missed_call">
-            <label for="missed_call">Missed call</label>
-          </div>
-          <div style="margin-top: 0px; margin-left: 10%;">
-            <b>Set New Day: </b><span id="lastGenDate"></span>
-            <form class="status_form" id="formNewChatDate">
-              <div style="margin-top: 6px; display: flex; flex-direction: row;">
-                <input name="input_value" style="color: #ffffff00; text-indent: -100px;" type="date" class="form-control" id="new_chat_day" />
-                <span class="datepicker_label">mm/dd/yyyy</span>
-                <button type="button" class="btn btn-primary" id="generateNewDay" style="margin-left: 5px; display: none;">
-                  <span style="margin-right: 6px">Set</span>
-                </button>
-              </div>
-            </form>
-          </div>
+function SettingsSection({ state, setState }) {
+  return (
+    <section>
+      <div className="section-title">Chat details</div>
+      <div className="option-grid">
+        <div className="field">
+          <label>Group name</label>
+          <input type="text" value={state.groupName} onChange={e => setState(s => ({...s, groupName: e.target.value}))} />
         </div>
-
-        <br/>
-        <b>Conversation Time:</b>
-        <div style="display: flex; align-items: center;">
-          <form class="status_form" id="clockTimeHour"><div style="margin-top: 4px;">
-            <input name="input_value" type="number" class="form-control" id="clock-hour" placeholder="Hour" style="width: 90px;" />
-          </div></form>
-          <form class="status_form" id="clockTimeMinute"><div style="margin-top: 4px; margin-left: 6px;">
-            <input name="input_value" type="number" class="form-control" id="clock-minute" placeholder="Minute" style="width: 120px;" />
-          </div></form>
-          <input type="radio" name="clockFormat" id="clock-pm" style="margin-left: 15px;">
-          <label for="clock-pm">&nbsp;PM</label>
-          <input type="radio" name="clockFormat" id="clock-am" style="margin-left: 10px;">
-          <label for="clock-am">&nbsp;AM</label>
+        <div className="field">
+          <label>Subtitle</label>
+          <input type="text" value={state.subtitle} onChange={e => setState(s => ({...s, subtitle: e.target.value}))} />
         </div>
-        <button type="button" class="btn btn-primary" id="setTime" style="display: none;"><b style="margin-right: 6px">Set Time</b></button>
-
-        <br/><br/>
-        <b>Phone Status Bar:</b>
-        <div style="display: flex; align-items: center;">
-          <input type="checkbox" checked class="statusbar_check" id="bar1"><label for="bar1">&nbsp;Vibration</label>
-          <input type="checkbox" checked class="statusbar_check" id="bar2" style="margin-left: 10px;"><label for="bar2">&nbsp;Wifi</label>
-          <input type="checkbox" checked class="statusbar_check" id="bar3" style="margin-left: 10px;"><label for="bar3">&nbsp;LTE</label>
-          <input type="checkbox" checked class="statusbar_check" id="bar4" style="margin-left: 10px;"><label for="bar4">&nbsp;Signal low</label>
-          <input type="checkbox" checked class="statusbar_check" id="bar5" style="margin-left: 10px;"><label for="bar5">&nbsp;Signal high</label>
+        <div className="field">
+          <label>Status bar time</label>
+          <input type="text" value={state.statusTime} onChange={e => setState(s => ({...s, statusTime: e.target.value}))} />
         </div>
-        <br/>
-        <div>
-          <input type="radio" name="battery" id="battery1"><label for="battery1">&nbsp;Battery 1</label>
-          <input type="radio" name="battery" id="battery2" style="margin-left: 10px;"><label for="battery2">&nbsp;Battery 2</label>
+        <div className="field">
+          <label>Battery %</label>
+          <input type="number" min="1" max="100" value={state.battery} onChange={e => setState(s => ({...s, battery: +e.target.value || 0}))} />
         </div>
-        <div>
-          <input type="radio" name="device_height" id="device_height1"><label for="device_height1">&nbsp;Phone Height 1</label>
-          <input type="radio" name="device_height" id="device_height2" style="margin-left: 10px;"><label for="device_height2">&nbsp;Phone Height 2</label>
-          <input type="radio" name="device_height" id="device_height3" style="margin-left: 10px;"><label for="device_height3">&nbsp;Phone Height 3</label>
-          <input type="radio" name="device_height" id="device_height4" style="margin-left: 10px;"><label for="device_height4">&nbsp;Phone Height 4</label>
-        </div>
-
-        <div style="margin-top: 6px;">
-          <b>No Of Voice File: </b>
-          <form class="status_form" id="voice_file_no">
-            <div style="margin-top: 6px;">
-              <input name="input_value" type="number" class="form-control" id="inp_voice_no" placeholder="File No" value="57" style="width: 150px;" />
-            </div>
-          </form>
-        </div>
-
-        <div style="margin-top: 32px;">
-          <b>Chat Message Date: </b>
-          <button type="button" class="btn btn-primary" id="showMsgDate" style="margin-top: 3px;"><b style="margin-right: 6px">Date List</b></button>
+        <div className="field">
+          <label>Connection</label>
+          <select value={state.network || 'wifi'} onChange={e => setState(s => ({...s, network: e.target.value}))}>
+            <option value="wifi">Wi-Fi</option>
+            <option value="5g">5G</option>
+            <option value="5ge">5G E</option>
+            <option value="lte">LTE</option>
+            <option value="4g">4G</option>
+            <option value="3g">3G</option>
+          </select>
         </div>
       </div>
-    </div>
-  </div>
+      <div className="row" style={{marginTop: 10}}>
+        <Toggle on={state.typingOn} onChange={v => setState(s => ({...s, typingOn: v}))} label="Show typing indicator" />
+        <div className="field" style={{marginLeft: 'auto'}}>
+          <label style={{marginBottom:0}}>Who's typing</label>
+          <select value={state.typingBy} onChange={e => setState(s => ({...s, typingBy: e.target.value}))}>
+            {state.members.filter(m => m.id !== state.meId).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-  <div class="form-container" id="data_modify_panel" style="margin-left: 0px; width: 100%; max-width: 100%; display: none;">
-    <div style="float: right; margin-top: -12px; display: flex; justify-content: flex-end;">
-      <a href="#" id="close-data-modify" style="text-decoration: none;"><small>Hide Panel</small></a>
-    </div>
-    <h5 class="card-title" style="color: #ffc800; text-align: center;">Modify Data</h5>
-    <small class="small-text-desc">Importing and Deletion</small>
-    <br/><br/>
-    <div style="display: flex;">
-      <div><b>Import Chat Room data: </b><br/><input style="margin-top: 5px;" type="file" id="import_chatroom_db" /></div>
-      <div style="margin-left: 10%;"><b>Import Chat Message data: </b><br/><input style="margin-top: 5px;" type="file" id="import_chatmsg_db" /></div>
-    </div>
-    <br/><br/>
-    <div style="display: flex;">
+function ControlPanel({ state, setState }) {
+  return (
+    <div className="panel">
       <div>
-        <b>Delete Chat Room:</b><small class="small-text-desc" style="text-align: left;">delete chat room & message</small>
-        <div style="margin-top: 5px;"><button type="button" class="btn btn-danger" id="delete-room"><b>Delete Room</b></button></div>
+        <h2>Messenger Group Chat</h2>
+        <p className="panel-sub">Faithful iPhone 16 Pro · iOS Messenger (2026)</p>
       </div>
-      <div style="margin-left: 10%;">
-        <b>Cleanup Whole Database:</b><small class="small-text-desc" style="text-align: left;">destroy all chat and message data</small>
-        <div style="margin-top: 5px;"><button type="button" class="btn btn-danger" id="clearn-db"><b>Cleanup</b></button></div>
-      </div>
-      <div style="margin-left: 10%;">
-        <b>Optimize Data:</b><small class="small-text-desc" style="text-align: left;">optimize old message data</small>
-        <div style="margin-top: 5px;"><button type="button" class="btn btn-primary" id="optimize-db"><b>Optimize</b></button></div>
-      </div>
+      <MembersSection
+        members={state.members}
+        setMembers={v => setState(s => ({...s, members: v}))}
+        meId={state.meId}
+        setMeId={v => setState(s => ({...s, meId: v}))}
+      />
+      <SendSection state={state} setState={setState} />
+      <AddExtrasSection state={state} setState={setState} />
+      <SettingsSection state={state} setState={setState} />
     </div>
-  </div>
+  );
+}
 
-  <span id="display"></span>
+Object.assign(window, { ControlPanel });
 
-  <!-- Create chatroom modal -->
-  <div class="form-popup-bg chatroom">
-    <div class="form-container-create-chatroom">
-      <button id="btnCloseForm" class="close-button">X</button>
-      <div class="container">
-        <h3 style="text-align: center; color: #fff;">Create Chat Room</h3>
-        <br/>
-        <div class="row justify-content-center">
-          <div class="col-12">
-            <div id="chatroom" class="rounded">
-              <b>Initial Members</b>
-              <div id="chatroom_initial_members" style="margin-top: 8px;">
-                <!-- initial 2 slots -->
-              </div>
-              <form id="chat-room-form" style="margin-top: 16px;">
-                <div>
-                  <b for="your-message">Chat Room Name</b>
-                  <input type="text" name="content" id="chat-room-name-input" class="form-control" placeholder="Input chat room name">
-                </div>
-                <br/>
-                <button type="button" class="btn btn-primary" id="create-chat-room-btn"><b>Create</b></button>
-              </form>
-              <input type='file' id="imgInpChatRoomA" onclick="this.value=null;" accept="image/*" hidden />
-              <input type='file' id="imgInpChatRoomB" onclick="this.value=null;" accept="image/*" hidden />
-            </div>
-          </div>
+
+/* global React, ReactDOM */
+// app.jsx — root
+
+const { useState: useAppState, useEffect: useAppEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "groupName": "Weekend Crew 🌴",
+  "subtitle": "Active now",
+  "typingOn": true
+}/*EDITMODE-END*/;
+
+function makeMember(id, name, seed) {
+  return { id, name, avatar: avatarUrl(seed) };
+}
+
+const initialMembers = [
+  makeMember('u1', 'You', 'you-1983'),
+  makeMember('u2', 'Maya', 'maya-seed-42'),
+  makeMember('u3', 'Jordan', 'jordan-seed-7'),
+  makeMember('u4', 'Priya', 'priya-seed-18'),
+];
+
+function initialMessages() {
+  return [
+    { id:'d1', type:'date', label:'SAT AT 6:24 PM' },
+    { id:'m1', from:'u2', type:'text', text:'ok who\'s actually free this weekend 👀' },
+    { id:'m2', from:'u3', type:'text', text:'me!! finally a free sat' },
+    { id:'m3', from:'u3', type:'text', text:'what are we thinking — beach or hike?' },
+    { id:'m4', from:'u4', type:'text', text:'beach beach beach', reactions:[{emoji:'❤️'},{emoji:'🙌'}] },
+    { id:'m5', from:'u1', type:'text', text:'I\'m in. I can drive', seenBy:['u2','u3','u4'] },
+    { id:'m6', from:'u2', type:'voice', duration:'0:23' },
+    { id:'m7', from:'u2', type:'text', text:'^^ listen to that for the vibe', replyTo:{name:'Maya', text:'Voice message'} },
+    { id:'m8', from:'u4', type:'image', src:'https://picsum.photos/seed/beach-day/400/300', reactions:[{emoji:'🔥'}] },
+    { id:'m9', from:'u1', type:'text', text:'wait is that from last summer??' },
+    { id:'m10', from:'u3', type:'text', text:'yeah pulled it up to convince everyone 😂' },
+    { id:'c1', type:'call', missed:false, title:'Voice call', sub:'4 min 12 sec · with Maya, Jordan' },
+    { id:'m11', from:'u1', type:'text', text:'ok sun chairs + speaker — I got it', seenBy:['u2','u3','u4'] },
+  ];
+}
+
+function App() {
+  const [state, setState] = useAppState(() => ({
+    members: initialMembers,
+    meId: 'u1',
+    groupName: TWEAK_DEFAULTS.groupName,
+    subtitle: TWEAK_DEFAULTS.subtitle,
+    statusTime: '9:41',
+    battery: 82,
+    network: 'wifi',
+    typingOn: TWEAK_DEFAULTS.typingOn,
+    typingBy: 'u3',
+    messages: initialMessages(),
+  }));
+  const [tweakMode, setTweakMode] = useAppState(false);
+
+  useAppEffect(() => {
+    const handler = (e) => {
+      if (!e.data || typeof e.data !== 'object') return;
+      if (e.data.type === '__activate_edit_mode') setTweakMode(true);
+      if (e.data.type === '__deactivate_edit_mode') setTweakMode(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type:'__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const pushTweak = (partial) => {
+    window.parent.postMessage({ type:'__edit_mode_set_keys', edits: partial }, '*');
+  };
+
+  const [toast, setToast] = useAppState(null);
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2000);
+  };
+
+  const takeScreenshot = async () => {
+    const el = document.querySelector('.iphone16 .screen');
+    if (!el || !window.html2canvas) { showToast('Screenshot not available'); return; }
+    // Blur any focused element so the caret doesn't render into the screenshot
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+    window.getSelection && window.getSelection().removeAllRanges();
+    showToast('Capturing…');
+    // Temporarily remove rounded corners / scaling artifacts + hide home indicator
+    const prevRadius = el.style.borderRadius;
+    const prevTransform = el.style.transform;
+    el.style.borderRadius = '0';
+    el.style.transform = 'none';
+    el.classList.add('--capturing');
+    const home = el.querySelector('.home-indicator');
+    const prevHome = home && home.style.display;
+    if (home) home.style.display = 'none';
+    // Wait a frame so the blur + selection removal takes effect
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    try {
+      const rect = el.getBoundingClientRect();
+      const canvas = await window.html2canvas(el, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        width: rect.width,
+        height: rect.height,
+        windowWidth: rect.width,
+        windowHeight: rect.height,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
+      });
+      const link = document.createElement('a');
+      link.download = 'messenger-chat-' + Date.now() + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Screenshot saved ✓');
+    } catch (err) {
+      console.error(err);
+      showToast('Screenshot failed');
+    } finally {
+      el.style.borderRadius = prevRadius;
+      el.style.transform = prevTransform;
+      el.classList.remove('--capturing');
+      if (home) home.style.display = prevHome || '';
+    }
+  };
+
+  const exportChat = () => {
+    const data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      state: {
+        members: state.members,
+        meId: state.meId,
+        groupName: state.groupName,
+        subtitle: state.subtitle,
+        statusTime: state.statusTime,
+        battery: state.battery,
+        network: state.network,
+        typingOn: state.typingOn,
+        typingBy: state.typingBy,
+        messages: state.messages,
+      },
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'messenger-chat-' + (state.groupName || 'export').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('Chat exported ✓');
+  };
+
+  const importChat = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        const s = data.state || data;
+        if (!s.members || !s.messages) { showToast('Invalid chat file'); return; }
+        setState(cur => ({ ...cur, ...s }));
+        showToast('Chat imported ✓');
+      } catch (err) {
+        console.error(err);
+        showToast('Invalid JSON');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <>
+      <div className="app-header">
+        <div className="brand"><div className="logo-dot"/> Messenger Clone</div>
+        <div className="tag">iPhone 16 Pro · iOS Messenger</div>
+        <div className="spacer"/>
+        <button className="h-btn" onClick={takeScreenshot} title="Save phone as PNG">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM20 4h-3.2L15 2H9L7.2 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/></svg>
+          Screenshot
+        </button>
+        <button className="h-btn" onClick={exportChat} title="Download chat as JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Export
+        </button>
+        <label className="h-btn" title="Load chat from JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-4v6H9v-6H5l7-7 7 7zM5 4v2h14V4H5z"/></svg>
+          Import
+          <input type="file" accept="application/json" style={{display:'none'}} onChange={e => { importChat(e.target.files[0]); e.target.value=''; }} />
+        </label>
+      </div>
+      {toast && <div className="toast">{toast}</div>}
+      <div className="app-shell">
+        <div className="phone-col">
+          <MessengerPhone state={state} setState={setState} />
+        </div>
+        <div className="panel-col">
+          <ControlPanel state={state} setState={setState} />
         </div>
       </div>
-    </div>
-  </div>
 
-  <div id="loading"></div>
+      {tweakMode && (
+        <div style={{
+          position:'fixed', right:20, bottom:20, width:280, background:'#fff',
+          borderRadius:16, boxShadow:'0 10px 30px rgba(0,0,0,0.18)',
+          padding:16, zIndex:2000, border:'1px solid #e4e6eb',
+        }}>
+          <div style={{fontSize:14, fontWeight:700, marginBottom:10}}>Tweaks</div>
+          <div className="field">
+            <label>Group name</label>
+            <input type="text" value={state.groupName}
+              onChange={e => { setState(s => ({...s, groupName:e.target.value})); pushTweak({ groupName:e.target.value }); }}/>
+          </div>
+          <div className="field" style={{marginTop:8}}>
+            <label>Subtitle</label>
+            <input type="text" value={state.subtitle}
+              onChange={e => { setState(s => ({...s, subtitle:e.target.value})); pushTweak({ subtitle:e.target.value }); }}/>
+          </div>
+          <div style={{marginTop:10}}>
+            <Toggle on={state.typingOn} label="Typing indicator"
+              onChange={v => { setState(s => ({...s, typingOn:v})); pushTweak({ typingOn:v }); }} />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
-  <div id="screen_shot" style="display: none; margin-top: 100px; padding: 20px;">
-    <h2>Screen Shoot</h2>
-  </div>
-</main>
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 
-<!-- Chat room list (bottom right) -->
-<div class="chat-room-list" id="chat_room_list">
-  <div class="list-header">
-    <span>Chat List</span>
-    <a href="#" style="float: right; margin-top: -3px;" id="close-chatlist">
-      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="m16.5 33.6 7.5-7.5 7.5 7.5 2.1-2.1-7.5-7.5 7.5-7.5-2.1-2.1-7.5 7.5-7.5-7.5-2.1 2.1 7.5 7.5-7.5 7.5ZM24 44q-4.1 0-7.75-1.575-3.65-1.575-6.375-4.3-2.725-2.725-4.3-6.375Q4 28.1 4 24q0-4.15 1.575-7.8 1.575-3.65 4.3-6.35 2.725-2.7 6.375-4.275Q19.9 4 24 4q4.15 0 7.8 1.575 3.65 1.575 6.35 4.275 2.7 2.7 4.275 6.35Q44 19.85 44 24q0 4.1-1.575 7.75-1.575 3.65-4.275 6.375t-6.35 4.3Q28.15 44 24 44Z" fill="#fff"/></svg>
-    </a>
-  </div>
-  <div class="list-group" style="border-radius: 0px; max-height: 400px; overflow: auto;" id="list-item-panel"></div>
-</div>
-
-<div class="chat-msgdate-list" style="display: none;">
-  <div class="list-header">
-    <div style="display: flex; justify-content: space-between;">
-      <button type="button" class="btn btn-primary" id="showMsgSelectedDate"><b style="margin-right: 6px">Show Message</b></button>
-      <div style="display: flex; align-items: flex-end;">
-        <button class="btn btn-primary-outline" id="select-all" style="padding-bottom: 0px;"><small>Select all</small></button>
-        <button class="btn btn-primary-outline" id="deselect-all" style="padding-bottom: 0px;"><small>Deselect all</small></button>
-      </div>
-      <a href="#" id="close-msgdate-list" style="margin-top: -3px;">
-        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="m16.5 33.6 7.5-7.5 7.5 7.5 2.1-2.1-7.5-7.5 7.5-7.5-2.1-2.1-7.5 7.5-7.5-7.5-2.1 2.1 7.5 7.5-7.5 7.5ZM24 44q-4.1 0-7.75-1.575-3.65-1.575-6.375-4.3-2.725-2.725-4.3-6.375Q4 28.1 4 24q0-4.15 1.575-7.8 1.575-3.65 4.3-6.35 2.725-2.7 6.375-4.275Q19.9 4 24 4q4.15 0 7.8 1.575 3.65 1.575 6.35 4.275 2.7 2.7 4.275 6.35Q44 19.85 44 24q0 4.1-1.575 7.75-1.575 3.65-4.275 6.375t-6.35 4.3Q28.15 44 24 44Z" fill="#fff"/></svg>
-      </a>
-    </div>
-  </div>
-  <div class="list-group" style="border-radius: 0px; max-height: 540px; overflow: auto; background-color: #ffffff; padding: 6px" id="list-item-panel">
-    <div id="msg_date"></div>
-  </div>
-</div>
-
-<!-- Scripts -->
-<script src='./js/jquery3-6-1.min.js'></script>
-<script src="./js/jquery.resizeImg.js"></script>
-<script src="./js/mobileBUGFix.mini.js"></script>
-<script src="./js/jquery.roundimage.js"></script>
-<script src='./js/jquery.waypoints.min.js'></script>
-<script src='./js/moment2-13-0.min.js'></script>
-<script src="./js/pouchdb-8.0.0.min.js"></script>
-<script src="./js/pouchdb.find.min.js"></script>
-<script src="./js/pouchdb.replication-stream.min.js"></script>
-<script src="./js/memorystream.js"></script>
-<script src="./js/pouchdb.load.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="./js/script.js"></script>
-
+</script>
 </body>
 </html>
