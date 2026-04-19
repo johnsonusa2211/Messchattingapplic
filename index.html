@@ -1980,19 +1980,44 @@ function initialMessages() {
   ];
 }
 
+const STORAGE_KEY = 'messenger-clone-state-v1';
+
+function loadSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || !s.members || !s.messages) return null;
+    return s;
+  } catch (err) { return null; }
+}
+
 function App() {
-  const [state, setState] = useAppState(() => ({
-    members: initialMembers,
-    meId: 'u1',
-    groupName: TWEAK_DEFAULTS.groupName,
-    subtitle: TWEAK_DEFAULTS.subtitle,
-    statusTime: '9:41',
-    battery: 82,
-    network: 'wifi',
-    typingOn: TWEAK_DEFAULTS.typingOn,
-    typingBy: 'u3',
-    messages: initialMessages(),
-  }));
+  const [state, setState] = useAppState(() => {
+    const saved = loadSavedState();
+    if (saved) return saved;
+    return {
+      members: initialMembers,
+      meId: 'u1',
+      groupName: TWEAK_DEFAULTS.groupName,
+      subtitle: TWEAK_DEFAULTS.subtitle,
+      statusTime: '9:41',
+      battery: 82,
+      network: 'wifi',
+      typingOn: TWEAK_DEFAULTS.typingOn,
+      typingBy: 'u3',
+      messages: initialMessages(),
+    };
+  });
+
+  // Persist entire state to localStorage on every change (debounced)
+  useAppEffect(() => {
+    const id = setTimeout(() => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch (err) { console.warn('Save failed', err); }
+    }, 200);
+    return () => clearTimeout(id);
+  }, [state]);
   const [tweakMode, setTweakMode] = useAppState(false);
 
   useAppEffect(() => {
@@ -2132,6 +2157,19 @@ function App() {
           Import
           <input type="file" accept="application/json" style={{display:'none'}} onChange={e => { importChat(e.target.files[0]); e.target.value=''; }} />
         </label>
+        <button
+          className="h-btn"
+          title="Wipe saved chat in this browser and restore defaults"
+          onClick={() => {
+            if (!confirm('This will erase the chat saved in this browser and restore the demo conversation. Continue?')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+          }}
+          style={{color:'#65676b'}}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A8 8 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6a5.9 5.9 0 0 1 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Reset
+        </button>
       </div>
       {toast && <div className="toast">{toast}</div>}
       <div className="app-shell">
