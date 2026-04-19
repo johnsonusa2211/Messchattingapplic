@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messenger Group Chat</title>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.1.2/css/material-design-iconic-font.min.css">
+  <link rel="stylesheet" href="./style/style.css">
+  <link rel="stylesheet" href="./style/devices.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg,#0084ff,#6a3cff); position: fixed; top: 0; right: 0; left: 0; z-index: 1030;">
+  <div class="container-fluid">
+    <b><a class="navbar-brand" href="#">Messenger Group Chat</a></b>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="show-chat-room">Show chat-room</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="create-chat-room">Create chat-room</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="show-data-panel">Show data panel</a></li>
+      </ul>
+      <button id="capture_screen" type="button" class="btn btn-light" style="margin: 2px; display: flex; align-items: center;">
+        <b style="margin-right: 6px">Screen Shoot</b>
+        <span class="material-icons">center_focus_strong</span>
+      </button>
+      <button id="export_data" type="button" class="btn btn-light" style="margin: 2px; display: flex; align-items: center;">
+        <b style="margin-right: 6px">Export</b>
+        <span class="material-icons">system_update_alt</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="form-popup-bg">
+  <div class="form-container">
+    <button id="btnCloseForm" class="close-button">X</button>
+    <h5 class="card-title">Change Content</h5>
+    <small style="color: rgb(156, 156, 156);">Fill the text box bellow</small>
+    <p></p>
+    <form id="change_content">
+      <div class="form-group">
+        <input name="input_value" type="text" class="form-control" id="input_value_content" />
+      </div>
+    </form>
+  </div>
+</div>
+
+<main style="padding-top: 55px;">
+  <div class="page" style="padding: 12px;">
+
+    <!-- ============ iPhone X FRAME ============ -->
+    <div class="marvel-device iphone-x" id="device_model">
+      <div class="notch">
+        <div class="camera"></div>
+        <div class="speaker"></div>
+      </div>
+      <div class="top-bar"></div>
+      <div class="sleep"></div>
+      <div class="volume"></div>
+      <div class="overflow">
+        <div class="shadow shadow--tr"></div>
+        <div class="shadow shadow--tl"></div>
+        <div class="shadow shadow--br"></div>
+        <div class="shadow shadow--bl"></div>
+      </div>
+      <div class="inner-shadow"></div>
+      <div class="screen">
+        <div class="screen-container" id="screenshot_target">
+
+          <div class="status-bar ios-statusbar">
+            <div class="ios-time">
+              <span class="time"></span>
+            </div>
+            <div class="ios-right">
+              <svg id="status-bar-sinal" viewBox="0 0 18 10" width="18" height="10" style="margin-right: 4px;"><rect x="0" y="6" width="3" height="4" rx="1" fill="#000"/><rect x="4" y="4" width="3" height="6" rx="1" fill="#000"/><rect x="8" y="2" width="3" height="8" rx="1" fill="#000"/><rect x="12" y="0" width="3" height="10" rx="1" fill="#000"/></svg>
+              <span id="status-bar-lte" style="font-size:11px; font-weight:600; margin-right:4px;">5G</span>
+              <svg id="status-bar-wifi" viewBox="0 0 16 12" width="15" height="11" style="margin-right: 5px;"><path d="M8 11.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5zM12.1 6.9a5.8 5.8 0 0 0-8.2 0l1.3 1.3a4 4 0 0 1 5.6 0l1.3-1.3zM15 4a10 10 0 0 0-14 0l1.3 1.3a8.1 8.1 0 0 1 11.4 0L15 4z" fill="#000"/></svg>
+              <div class="ios-battery">
+                <span id="battery_percentage" contentEditable="true" class="ios-battery-pct">85%</span>
+                <span class="ios-battery-shell"><span class="ios-battery-fill" id="status-bar-battery" data-battery="2"></span></span>
+              </div>
+              <span id="status-bar-sinal2" style="display:none;"></span>
+              <span id="status-bar-vibrate" style="display:none;"></span>
+            </div>
+          </div>
+
+          <div class="chat">
+            <div class="chat-container">
+
+              <!-- iOS Messenger header -->
+              <div class="user-bar ios-header">
+                <div class="back ios-back"><i class="zmdi zmdi-chevron-left"></i></div>
+                <div class="ios-center">
+                  <div class="group-avatar-stack" id="group-avatar-stack">
+                    <!-- avatars injected by JS -->
+                  </div>
+                  <span id="chat_name" contentEditable="true" class="ios-chat-name">Group Chat</span>
+                  <span class="status ios-chat-sub" id="chat_status" contentEditable="true">Active now</span>
+                </div>
+                <div class="ios-header-actions">
+                  <div class="actions">
+                    <svg id="voice_call_btn" class="action-icon" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M20.01 15.38a11.87 11.87 0 0 1-3.72-.59 1.03 1.03 0 0 0-1.06.24l-1.57 1.97a15.02 15.02 0 0 1-6.59-6.58l1.96-1.66a1 1 0 0 0 .25-1.02A11.87 11.87 0 0 1 8.69 4 1 1 0 0 0 7.69 3H4.19A.99.99 0 0 0 3.19 4.04C3.56 14.26 11.74 22.44 21.96 22.81a.99.99 0 0 0 1.04-1V18.4c0-.55-.45-.99-.99-1.02z"/></svg>
+                  </div>
+                  <div class="actions">
+                    <svg id="video_call_btn" class="action-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="#0084ff" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conversation area -->
+              <div class="conversation">
+                <div id="scroll_arrow_button" style="position: absolute; right: 10px; bottom: 76px; z-index: 1; display: none;">
+                  <div class="scroll-down-btn"><i class="zmdi zmdi-chevron-down"></i></div>
+                </div>
+                <div class="float-message-date" id="top-nav-chat-date" contentEditable="true">Today</div>
+                <div class="conversation-container" id="conversation_container">
+                  <!-- messages injected here -->
+                </div>
+
+                <!-- iOS Messenger compose bar -->
+                <form class="bottom_icon" id="form_screenshot_bar">
+                  <div class="compose-left-icons">
+                    <div class="compose-ic compose-ic-plus" title="More"><span class="material-icons">add_circle</span></div>
+                    <div class="compose-ic compose-ic-camera" title="Camera"><span class="material-icons">photo_camera</span></div>
+                    <div class="compose-ic compose-ic-photo" title="Photos"><span class="material-icons">photo</span></div>
+                    <div class="compose-ic compose-ic-mic" title="Voice"><span class="material-icons">mic</span></div>
+                  </div>
+                  <div class="compose-input-wrap">
+                    <span class="input-msg-fake" id="input_text_screenshot">Aa</span>
+                    <div class="compose-ic compose-ic-inline" title="Stickers"><span class="material-icons" style="font-size:22px; color:#0084ff;">sentiment_satisfied_alt</span></div>
+                  </div>
+                  <div class="compose-send compose-like" title="Like"><span class="material-icons" style="color:#0084ff; font-size:28px;">thumb_up</span></div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONTROL PANEL ============ -->
+    <div class="form-container" id="chat_panel" style="margin-left: 30px;">
+      <h3 style="text-align: center;">Conversation Panel</h3>
+      <br/>
+
+      <div class="group-members-wrap">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <b style="color: #fff;">Group Members</b>
+          <button type="button" class="btn btn-primary btn-sm" id="add_user_btn">
+            <span class="material-icons" style="font-size: 16px; vertical-align: middle;">person_add</span>
+            Add User
+          </button>
+        </div>
+        <small style="color: rgb(156, 156, 156);">Add unlimited members to the group. Each member has their own profile picture and can send messages.</small>
+        <div id="members_list" class="members-list">
+          <!-- users injected here -->
+        </div>
+      </div>
+
+      <br/>
+
+      <div class="compose-section" style="background: #fff; border-radius: 16px; padding: 16px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <b style="color: #350e51;">Chatting as:</b>
+            <select id="active_user_select" class="form-select" style="display: inline-block; width: auto; margin-left: 8px;">
+              <!-- options injected -->
+            </select>
+          </div>
+          <div class="user-nav">
+            <div class="actions">
+              <svg id="ua_voice_call_btn" class="action-icon-panel" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M20.01 15.38a11.87 11.87 0 0 1-3.72-.59 1.03 1.03 0 0 0-1.06.24l-1.57 1.97a15.02 15.02 0 0 1-6.59-6.58l1.96-1.66a1 1 0 0 0 .25-1.02A11.87 11.87 0 0 1 8.69 4 1 1 0 0 0 7.69 3H4.19A.99.99 0 0 0 3.19 4.04C3.56 14.26 11.74 22.44 21.96 22.81a.99.99 0 0 0 1.04-1V18.4c0-.55-.45-.99-.99-1.02z"/></svg>
+            </div>
+            <div class="actions">
+              <svg id="ua_video_call_btn" class="action-icon-panel" viewBox="0 0 24 24" width="22" height="22"><path fill="#0084ff" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            </div>
+          </div>
+        </div>
+        <p></p>
+        <form class="bottom_icon" id="form_active_user">
+          <div style="flex: 1;">
+            <div class="conversation-compose-input">
+              <input class="input-msg-actor" id="input_text_active" name="input_message_active" placeholder="Type a message..." autocomplete="off">
+            </div>
+            <div class="conversation-compose panel">
+              <div class="chat-icon" title="Sticker"><span class="material-icons" id="sticker_btn" style="color:#0084ff; cursor: pointer;">sentiment_satisfied_alt</span></div>
+              <div class="chat-icon" title="Photo"><span class="material-icons" id="photo_btn" style="color:#0084ff; cursor: pointer;">photo</span></div>
+              <div class="chat-icon" title="Camera"><span class="material-icons" style="color:#0084ff;">photo_camera</span></div>
+              <div class="chat-icon" title="GIF"><span class="material-icons" style="color:#0084ff;">gif</span></div>
+              <div class="chat-icon" title="File"><span class="material-icons" style="color:#0084ff;">attach_file</span></div>
+              <div class="chat-icon" title="More"><span class="material-icons" style="color:#0084ff;">more_horiz</span></div>
+
+              <input type='file' id="imgInpActive" onclick="this.value=null;" accept="image/*" hidden />
+              <input type='file' id="stickerInpActive" onclick="this.value=null;" accept="image/*" hidden />
+            </div>
+          </div>
+          <div id="voice_button_active" title="Send voice" style="margin-left: 10px;">
+            <div class="voice-record-btn"><span class="material-icons" style="color: #fff; font-size: 22px;">mic</span></div>
+          </div>
+        </form>
+      </div>
+
+      <div style="padding-bottom: 60px; margin-top: 32px; border-radius: 16px;">
+        <h5 class="card-title" style="color: #00ffff; text-align: center;">Chat Status</h5>
+        <small class="small-text-desc">Change all options in form bellow</small>
+        <p></p>
+        <div style="display: flex;">
+          <div class="msg_status">
+            <b>Message Option:</b><br/>
+            <input type="radio" name="messageStatus" value="delivered" id="status-delivered" checked>
+            <label for="status-delivered">Delivered</label><br/>
+            <input type="radio" name="messageStatus" value="read" id="status-read">
+            <label for="status-read">Seen</label>
+          </div>
+          <div class="msg_status" style="margin-left: 6%;">
+            <b>Call Status:</b><br/>
+            <input type="radio" name="callStatus" value="on" id="call_done" checked>
+            <label for="call_done">Done</label><br/>
+            <input type="radio" name="callStatus" value="off" id="missed_call">
+            <label for="missed_call">Missed call</label>
+          </div>
+          <div style="margin-top: 0px; margin-left: 10%;">
+            <b>Set New Day: </b><span id="lastGenDate"></span>
+            <form class="status_form" id="formNewChatDate">
+              <div style="margin-top: 6px; display: flex; flex-direction: row;">
+                <input name="input_value" style="color: #ffffff00; text-indent: -100px;" type="date" class="form-control" id="new_chat_day" />
+                <span class="datepicker_label">mm/dd/yyyy</span>
+                <button type="button" class="btn btn-primary" id="generateNewDay" style="margin-left: 5px; display: none;">
+                  <span style="margin-right: 6px">Set</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <br/>
+        <b>Conversation Time:</b>
+        <div style="display: flex; align-items: center;">
+          <form class="status_form" id="clockTimeHour"><div style="margin-top: 4px;">
+            <input name="input_value" type="number" class="form-control" id="clock-hour" placeholder="Hour" style="width: 90px;" />
+          </div></form>
+          <form class="status_form" id="clockTimeMinute"><div style="margin-top: 4px; margin-left: 6px;">
+            <input name="input_value" type="number" class="form-control" id="clock-minute" placeholder="Minute" style="width: 120px;" />
+          </div></form>
+          <input type="radio" name="clockFormat" id="clock-pm" style="margin-left: 15px;">
+          <label for="clock-pm">&nbsp;PM</label>
+          <input type="radio" name="clockFormat" id="clock-am" style="margin-left: 10px;">
+          <label for="clock-am">&nbsp;AM</label>
+        </div>
+        <button type="button" class="btn btn-primary" id="setTime" style="display: none;"><b style="margin-right: 6px">Set Time</b></button>
+
+        <br/><br/>
+        <b>Phone Status Bar:</b>
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" checked class="statusbar_check" id="bar1"><label for="bar1">&nbsp;Vibration</label>
+          <input type="checkbox" checked class="statusbar_check" id="bar2" style="margin-left: 10px;"><label for="bar2">&nbsp;Wifi</label>
+          <input type="checkbox" checked class="statusbar_check" id="bar3" style="margin-left: 10px;"><label for="bar3">&nbsp;LTE</label>
+          <input type="checkbox" checked class="statusbar_check" id="bar4" style="margin-left: 10px;"><label for="bar4">&nbsp;Signal low</label>
+          <input type="checkbox" checked class="statusbar_check" id="bar5" style="margin-left: 10px;"><label for="bar5">&nbsp;Signal high</label>
+        </div>
+        <br/>
+        <div>
+          <input type="radio" name="battery" id="battery1"><label for="battery1">&nbsp;Battery 1</label>
+          <input type="radio" name="battery" id="battery2" style="margin-left: 10px;"><label for="battery2">&nbsp;Battery 2</label>
+        </div>
+        <div>
+          <input type="radio" name="device_height" id="device_height1"><label for="device_height1">&nbsp;Phone Height 1</label>
+          <input type="radio" name="device_height" id="device_height2" style="margin-left: 10px;"><label for="device_height2">&nbsp;Phone Height 2</label>
+          <input type="radio" name="device_height" id="device_height3" style="margin-left: 10px;"><label for="device_height3">&nbsp;Phone Height 3</label>
+          <input type="radio" name="device_height" id="device_height4" style="margin-left: 10px;"><label for="device_height4">&nbsp;Phone Height 4</label>
+        </div>
+
+        <div style="margin-top: 6px;">
+          <b>No Of Voice File: </b>
+          <form class="status_form" id="voice_file_no">
+            <div style="margin-top: 6px;">
+              <input name="input_value" type="number" class="form-control" id="inp_voice_no" placeholder="File No" value="57" style="width: 150px;" />
+            </div>
+          </form>
+        </div>
+
+        <div style="margin-top: 32px;">
+          <b>Chat Message Date: </b>
+          <button type="button" class="btn btn-primary" id="showMsgDate" style="margin-top: 3px;"><b style="margin-right: 6px">Date List</b></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container" id="data_modify_panel" style="margin-left: 0px; width: 100%; max-width: 100%; display: none;">
+    <div style="float: right; margin-top: -12px; display: flex; justify-content: flex-end;">
+      <a href="#" id="close-data-modify" style="text-decoration: none;"><small>Hide Panel</small></a>
+    </div>
+    <h5 class="card-title" style="color: #ffc800; text-align: center;">Modify Data</h5>
+    <small class="small-text-desc">Importing and Deletion</small>
+    <br/><br/>
+    <div style="display: flex;">
+      <div><b>Import Chat Room data: </b><br/><input style="margin-top: 5px;" type="file" id="import_chatroom_db" /></div>
+      <div style="margin-left: 10%;"><b>Import Chat Message data: </b><br/><input style="margin-top: 5px;" type="file" id="import_chatmsg_db" /></div>
+    </div>
+    <br/><br/>
+    <div style="display: flex;">
+      <div>
+        <b>Delete Chat Room:</b><small class="small-text-desc" style="text-align: left;">delete chat room & message</small>
+        <div style="margin-top: 5px;"><button type="button" class="btn btn-danger" id="delete-room"><b>Delete Room</b></button></div>
+      </div>
+      <div style="margin-left: 10%;">
+        <b>Cleanup Whole Database:</b><small class="small-text-desc" style="text-align: left;">destroy all chat and message data</small>
+        <div style="margin-top: 5px;"><button type="button" class="btn btn-danger" id="clearn-db"><b>Cleanup</b></button></div>
+      </div>
+      <div style="margin-left: 10%;">
+        <b>Optimize Data:</b><small class="small-text-desc" style="text-align: left;">optimize old message data</small>
+        <div style="margin-top: 5px;"><button type="button" class="btn btn-primary" id="optimize-db"><b>Optimize</b></button></div>
+      </div>
+    </div>
+  </div>
+
+  <span id="display"></span>
+
+  <!-- Create chatroom modal -->
+  <div class="form-popup-bg chatroom">
+    <div class="form-container-create-chatroom">
+      <button id="btnCloseForm" class="close-button">X</button>
+      <div class="container">
+        <h3 style="text-align: center; color: #fff;">Create Chat Room</h3>
+        <br/>
+        <div class="row justify-content-center">
+          <div class="col-12">
+            <div id="chatroom" class="rounded">
+              <b>Initial Members</b>
+              <div id="chatroom_initial_members" style="margin-top: 8px;">
+                <!-- initial 2 slots -->
+              </div>
+              <form id="chat-room-form" style="margin-top: 16px;">
+                <div>
+                  <b for="your-message">Chat Room Name</b>
+                  <input type="text" name="content" id="chat-room-name-input" class="form-control" placeholder="Input chat room name">
+                </div>
+                <br/>
+                <button type="button" class="btn btn-primary" id="create-chat-room-btn"><b>Create</b></button>
+              </form>
+              <input type='file' id="imgInpChatRoomA" onclick="this.value=null;" accept="image/*" hidden />
+              <input type='file' id="imgInpChatRoomB" onclick="this.value=null;" accept="image/*" hidden />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading"></div>
+
+  <div id="screen_shot" style="display: none; margin-top: 100px; padding: 20px;">
+    <h2>Screen Shoot</h2>
+  </div>
+</main>
+
+<!-- Chat room list (bottom right) -->
+<div class="chat-room-list" id="chat_room_list">
+  <div class="list-header">
+    <span>Chat List</span>
+    <a href="#" style="float: right; margin-top: -3px;" id="close-chatlist">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="m16.5 33.6 7.5-7.5 7.5 7.5 2.1-2.1-7.5-7.5 7.5-7.5-2.1-2.1-7.5 7.5-7.5-7.5-2.1 2.1 7.5 7.5-7.5 7.5ZM24 44q-4.1 0-7.75-1.575-3.65-1.575-6.375-4.3-2.725-2.725-4.3-6.375Q4 28.1 4 24q0-4.15 1.575-7.8 1.575-3.65 4.3-6.35 2.725-2.7 6.375-4.275Q19.9 4 24 4q4.15 0 7.8 1.575 3.65 1.575 6.35 4.275 2.7 2.7 4.275 6.35Q44 19.85 44 24q0 4.1-1.575 7.75-1.575 3.65-4.275 6.375t-6.35 4.3Q28.15 44 24 44Z" fill="#fff"/></svg>
+    </a>
+  </div>
+  <div class="list-group" style="border-radius: 0px; max-height: 400px; overflow: auto;" id="list-item-panel"></div>
+</div>
+
+<div class="chat-msgdate-list" style="display: none;">
+  <div class="list-header">
+    <div style="display: flex; justify-content: space-between;">
+      <button type="button" class="btn btn-primary" id="showMsgSelectedDate"><b style="margin-right: 6px">Show Message</b></button>
+      <div style="display: flex; align-items: flex-end;">
+        <button class="btn btn-primary-outline" id="select-all" style="padding-bottom: 0px;"><small>Select all</small></button>
+        <button class="btn btn-primary-outline" id="deselect-all" style="padding-bottom: 0px;"><small>Deselect all</small></button>
+      </div>
+      <a href="#" id="close-msgdate-list" style="margin-top: -3px;">
+        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="m16.5 33.6 7.5-7.5 7.5 7.5 2.1-2.1-7.5-7.5 7.5-7.5-2.1-2.1-7.5 7.5-7.5-7.5-2.1 2.1 7.5 7.5-7.5 7.5ZM24 44q-4.1 0-7.75-1.575-3.65-1.575-6.375-4.3-2.725-2.725-4.3-6.375Q4 28.1 4 24q0-4.15 1.575-7.8 1.575-3.65 4.3-6.35 2.725-2.7 6.375-4.275Q19.9 4 24 4q4.15 0 7.8 1.575 3.65 1.575 6.35 4.275 2.7 2.7 4.275 6.35Q44 19.85 44 24q0 4.1-1.575 7.75-1.575 3.65-4.275 6.375t-6.35 4.3Q28.15 44 24 44Z" fill="#fff"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="list-group" style="border-radius: 0px; max-height: 540px; overflow: auto; background-color: #ffffff; padding: 6px" id="list-item-panel">
+    <div id="msg_date"></div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src='./js/jquery3-6-1.min.js'></script>
+<script src="./js/jquery.resizeImg.js"></script>
+<script src="./js/mobileBUGFix.mini.js"></script>
+<script src="./js/jquery.roundimage.js"></script>
+<script src='./js/jquery.waypoints.min.js'></script>
+<script src='./js/moment2-13-0.min.js'></script>
+<script src="./js/pouchdb-8.0.0.min.js"></script>
+<script src="./js/pouchdb.find.min.js"></script>
+<script src="./js/pouchdb.replication-stream.min.js"></script>
+<script src="./js/memorystream.js"></script>
+<script src="./js/pouchdb.load.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="./js/script.js"></script>
+
+</body>
+</html>
