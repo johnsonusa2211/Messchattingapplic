@@ -127,7 +127,7 @@ html, body {
   letter-spacing: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
 }
 .ios-statusbar .ios-right svg,
 .ios-statusbar .ios-right .ios-net-label {
@@ -272,6 +272,13 @@ html, body {
 }
 
 /* ===== Conversation area ===== */
+.chat-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
 .conversation {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -281,8 +288,43 @@ html, body {
   scrollbar-width: none;
   -ms-overflow-style: none;
   position: relative;
+  min-height: 0;
 }
 .conversation::-webkit-scrollbar { display: none; }
+
+/* Floating "jump to recent" button — pinned to bottom-right of the chat area (above compose bar) */
+.scroll-to-recent {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #0084ff;
+  border: 1px solid #e4e6eb;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: background 0.15s, transform 0.1s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  padding: 0;
+}
+.scroll-to-recent.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.scroll-to-recent:hover { background: #f7f8fa; }
+.scroll-to-recent:active { transform: scale(0.95); }
+.scroll-to-recent svg { transition: transform 0.15s; display: block; }
+.scroll-to-recent:hover svg { transform: translateY(2px); }
+.screen.--capturing .scroll-to-recent { display: none !important; }
 
 /* Intro / group start card */
 .chat-intro {
@@ -332,13 +374,62 @@ html, body {
 .date-sep {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 4px;
   margin: 14px 0 6px;
+  position: relative;
 }
-.date-sep span {
+.date-sep span.label {
   font-size: 11px;
   color: #65676b;
   font-weight: 600;
   letter-spacing: 0.1px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.12s;
+}
+.date-sep:hover span.label { background: #f0f2f5; }
+.date-sep .date-edit,
+.date-sep .date-del {
+  opacity: 0;
+  transition: opacity 0.12s;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: #65676b;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 12px;
+}
+.date-sep:hover .date-edit,
+.date-sep:hover .date-del { opacity: 1; }
+.date-sep .date-edit:hover { background: #e7f3ff; color: #0084ff; }
+.date-sep .date-del:hover { background: #fff5f5; color: #e41e3f; }
+.date-sep.out-of-order span.label {
+  color: #e41e3f;
+  text-decoration: underline;
+  text-decoration-color: #e41e3f;
+}
+.screen.--capturing .date-edit,
+.screen.--capturing .date-del { display: none !important; }
+.date-edit-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  border: 1px solid #e4e6eb;
+  padding: 12px;
+  width: 280px;
 }
 
 /* ===== Message wrappers ===== */
@@ -1363,9 +1454,58 @@ function MessageRow({ msg, sent, showAvatar, showName, senderName, senderAvatar,
   );
 }
 
-// Date divider
-function DateSep({ label }) {
-  return <div className="date-sep"><span>{label}</span></div>;
+// Build a Messenger-style label from an ISO timestamp. Shared between insert/edit.
+function dateLabelFromIso(iso) {
+  const dt = new Date(iso);
+  const today = new Date();
+  const diffDays = Math.floor((new Date(today).setHours(0,0,0,0) - new Date(dt).setHours(0,0,0,0)) / (24*60*60*1000));
+  const time = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  if (diffDays === 0) return `Today ${time}`;
+  if (diffDays === 1) return `Yesterday ${time}`;
+  if (diffDays < 7 && diffDays > 0) {
+    return `${dt.toLocaleDateString('en-US', { weekday:'short' }).toUpperCase()} AT ${time}`;
+  }
+  return `${dt.toLocaleDateString('en-US', { month:'short', day:'numeric' }).toUpperCase()} AT ${time}`;
+}
+
+// Date divider — clickable to edit time, hover to reveal delete, red if out of chronological order.
+function DateSep({ label, iso, outOfOrder, onEdit, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  const editable = !!(onEdit || onDelete);
+  return (
+    <div ref={ref} className={`date-sep ${outOfOrder ? 'out-of-order' : ''}`} title={outOfOrder ? 'This date is out of chronological order' : ''}>
+      <span className="label" onClick={() => editable && setOpen(o => !o)}>{label}</span>
+      {editable && (
+        <>
+          <button className="date-del" title="Delete date separator" aria-label="Delete date" onClick={(e) => {
+            e.stopPropagation();
+            if (onDelete && confirm('Delete this date separator?')) onDelete();
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </>
+      )}
+      {open && onEdit && (
+        <div className="date-edit-popover" onClick={e => e.stopPropagation()}>
+          <div style={{fontSize:12, fontWeight:700, marginBottom:8, color:'#050505'}}>Edit date separator</div>
+          <DateTimeForm
+            initIso={iso}
+            primaryLabel="Save"
+            onSave={(newIso) => { onEdit(newIso); setOpen(false); }}
+            onCancel={() => setOpen(false)}
+            onDelete={onDelete ? () => { if (confirm('Delete this date separator?')) { onDelete(); setOpen(false); } } : undefined}
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
 // Call bubble
@@ -1419,19 +1559,24 @@ function TypingIndicator({ avatar }) {
 }
 
 // Conversation
-function Conversation({ messages, members, meId, showTyping, typingBy, groupName, onEditMsg, onDeleteMsg }) {
+function Conversation({ messages, members, meId, showTyping, typingBy, groupName, onEditMsg, onDeleteMsg, onEditDate, onDeleteDate, scrollRef, onScroll }) {
   const memberById = Object.fromEntries(members.map(m => [m.id, m]));
-  const scrollRef = useRef(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, showTyping]);
 
   // compute pos (first/middle/last/solo) based on same-sender adjacency
   const rows = useMemo(() => {
     const out = [];
+    let prevDateIso = null;
     for (let i = 0; i < messages.length; i++) {
       const m = messages[i];
-      if (m.type === 'date' || m.type === 'call') { out.push({...m, kind: m.type}); continue; }
+      if (m.type === 'date') {
+        // Out of chronological order if this date's iso is earlier than the previous date divider's iso.
+        let outOfOrder = false;
+        if (m.iso && prevDateIso && new Date(m.iso) < new Date(prevDateIso)) outOfOrder = true;
+        if (m.iso) prevDateIso = m.iso;
+        out.push({...m, kind: 'date', outOfOrder});
+        continue;
+      }
+      if (m.type === 'call') { out.push({...m, kind: m.type}); continue; }
       const prev = messages[i-1];
       const next = messages[i+1];
       const sameAsPrev = prev && prev.from === m.from && prev.type !== 'date' && prev.type !== 'call' && m.type !== 'image' && m.type !== 'sticker' && prev.type !== 'image' && prev.type !== 'sticker';
@@ -1446,7 +1591,7 @@ function Conversation({ messages, members, meId, showTyping, typingBy, groupName
   }, [messages, meId]);
 
   return (
-    <div className="conversation" ref={scrollRef}>
+    <div className="conversation" ref={scrollRef} onScroll={onScroll}>
       <div className="chat-intro">
         <div className="intro-avatars">
           <div className="av a1" style={{backgroundImage: `url(${members[0]?.avatar})`}} />
@@ -1458,7 +1603,16 @@ function Conversation({ messages, members, meId, showTyping, typingBy, groupName
       </div>
 
       {rows.map((r, i) => {
-        if (r.kind === 'date') return <DateSep key={i} label={r.label} />;
+        if (r.kind === 'date') return (
+          <DateSep
+            key={i}
+            label={r.label}
+            iso={r.iso}
+            outOfOrder={r.outOfOrder}
+            onEdit={onEditDate ? (iso) => onEditDate(r.id, iso) : undefined}
+            onDelete={onDeleteDate ? () => onDeleteDate(r.id) : undefined}
+          />
+        );
         if (r.kind === 'call') return <CallBubble key={i} missed={r.missed} title={r.title} sub={r.sub}
           onEditTitle={onEditMsg ? (text) => onEditMsg(r.id, {title: text}) : undefined}
           onEditSub={onEditMsg ? (text) => onEditMsg(r.id, {sub: text}) : undefined}
@@ -1519,6 +1673,29 @@ function ComposeBar() {
 
 // Full phone
 function MessengerPhone({ state, setState }) {
+  const scrollRef = useRef(null);
+  const wasAtBottomRef = useRef(true);
+  const [atBottom, setAtBottom] = useState(true);
+  const NEAR_BOTTOM_PX = 80;
+
+  const updateAtBottom = () => {
+    const el = scrollRef.current; if (!el) return;
+    const near = (el.scrollHeight - el.scrollTop - el.clientHeight) < NEAR_BOTTOM_PX;
+    wasAtBottomRef.current = near;
+    setAtBottom(near);
+  };
+  const scrollToBottom = (smooth = true) => {
+    const el = scrollRef.current; if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+  };
+
+  useEffect(() => {
+    if (wasAtBottomRef.current) {
+      // defer to next frame so layout is flushed
+      requestAnimationFrame(() => scrollToBottom(false));
+    }
+  }, [state.messages, state.typingOn]);
+
   return (
     <div className="iphone16">
       <div className="side-btn silent"/>
@@ -1536,22 +1713,46 @@ function MessengerPhone({ state, setState }) {
             onNameChange={v => setState(s => ({...s, groupName: v}))}
             onSubChange={v => setState(s => ({...s, subtitle: v}))}
           />
-          <Conversation
-            messages={state.messages}
-            members={state.members}
-            meId={state.meId}
-            showTyping={state.typingOn}
-            typingBy={state.typingBy}
-            groupName={state.groupName}
-            onEditMsg={(id, patch) => setState(s => ({
-              ...s,
-              messages: s.messages.map(m => m.id === id ? {...m, ...(typeof patch === 'string' ? {text: patch} : patch)} : m)
-            }))}
-            onDeleteMsg={(id) => setState(s => ({
-              ...s,
-              messages: s.messages.filter(m => m.id !== id)
-            }))}
-          />
+          <div className="chat-area">
+            <Conversation
+              messages={state.messages}
+              members={state.members}
+              meId={state.meId}
+              showTyping={state.typingOn}
+              typingBy={state.typingBy}
+              groupName={state.groupName}
+              scrollRef={scrollRef}
+              onScroll={updateAtBottom}
+              onEditMsg={(id, patch) => setState(s => ({
+                ...s,
+                messages: s.messages.map(m => m.id === id ? {...m, ...(typeof patch === 'string' ? {text: patch} : patch)} : m)
+              }))}
+              onDeleteMsg={(id) => setState(s => ({
+                ...s,
+                messages: s.messages.filter(m => m.id !== id)
+              }))}
+              onEditDate={(id, iso) => setState(s => ({
+                ...s,
+                messages: s.messages.map(m => m.id === id ? {...m, iso, label: dateLabelFromIso(iso)} : m)
+              }))}
+              onDeleteDate={(id) => setState(s => ({
+                ...s,
+                messages: s.messages.filter(m => m.id !== id)
+              }))}
+            />
+            <button
+              className={`scroll-to-recent ${atBottom ? '' : 'show'}`}
+              onClick={() => scrollToBottom(true)}
+              aria-label="Jump to recent messages"
+              title="Jump to recent messages"
+              tabIndex={atBottom ? -1 : 0}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14"/>
+                <path d="m19 12-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
           <ComposeBar />
           <div className="home-indicator" />
         </div>
@@ -1611,7 +1812,23 @@ function MembersSection({ members, setMembers, meId, setMeId }) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      setMembers(members.map(m => m.id === id ? {...m, avatar: ev.target.result} : m));
+      const img = new Image();
+      img.onload = () => {
+        const size = 160;
+        const cnv = document.createElement('canvas');
+        cnv.width = size; cnv.height = size;
+        const ctx = cnv.getContext('2d');
+        const min = Math.min(img.width, img.height);
+        const sx = (img.width - min) / 2;
+        const sy = (img.height - min) / 2;
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+        const dataUrl = cnv.toDataURL('image/jpeg', 0.85);
+        setMembers(members.map(m => m.id === id ? {...m, avatar: dataUrl} : m));
+      };
+      img.onerror = () => {
+        setMembers(members.map(m => m.id === id ? {...m, avatar: ev.target.result} : m));
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   };
@@ -1710,14 +1927,79 @@ function SendSection({ state, setState }) {
 
 const { useState: usePState, useEffect: usePEffect, useRef: usePRef } = React;
 
+// Shared date-time editor used by DatePickerChip and DateSep's edit popover
+function DateTimeForm({ initIso, onSave, onCancel, onDelete, primaryLabel = 'Save', showQuickYears = false }) {
+  const init = initIso ? new Date(initIso) : new Date(Date.now() - 2*24*60*60*1000);
+  const [year, setYear] = usePState(init.getFullYear());
+  const [month, setMonth] = usePState(init.getMonth());
+  const [day, setDay] = usePState(init.getDate());
+  const [hour, setHour] = usePState(init.getHours());
+  const [minute, setMinute] = usePState(init.getMinutes());
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const yearList = [];
+  const curYear = new Date().getFullYear();
+  for (let y = curYear; y >= curYear - 15; y--) yearList.push(y);
+  const selectSx = {padding:'7px 8px', border:'1px solid #e4e6eb', borderRadius:8, fontSize:13, background:'#fff', flex:1, minWidth:0};
+  const save = () => {
+    const d = new Date(year, month, Math.min(day, daysInMonth), hour, minute);
+    onSave(d.toISOString());
+  };
+  const quickYear = (offset) => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + offset);
+    setYear(d.getFullYear()); setMonth(d.getMonth()); setDay(d.getDate());
+  };
+  return (
+    <>
+      {showQuickYears && (
+        <div style={{display:'flex', gap:4, marginBottom:10, flexWrap:'wrap'}}>
+          {[-1,-2,-3,-5,-10].map(y => (
+            <button key={y} className="btn ghost sm" style={{padding:'3px 8px', fontSize:11}} onClick={() => quickYear(y)}>{Math.abs(y)}y ago</button>
+          ))}
+        </div>
+      )}
+      <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Date</label>
+      <div style={{display:'flex', gap:6, marginBottom:10}}>
+        <select value={month} onChange={e => setMonth(+e.target.value)} style={selectSx}>
+          {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+        </select>
+        <select value={day} onChange={e => setDay(+e.target.value)} style={{...selectSx, flex:'0 0 70px'}}>
+          {Array.from({length: daysInMonth}, (_, i) => i+1).map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+        <select value={year} onChange={e => setYear(+e.target.value)} style={{...selectSx, flex:'0 0 90px'}}>
+          {yearList.map(y => <option key={y} value={y}>{y}</option>)}
+        </select>
+      </div>
+      <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Time</label>
+      <div style={{display:'flex', gap:6, marginBottom:12, alignItems:'center'}}>
+        <select value={hour} onChange={e => setHour(+e.target.value)} style={selectSx}>
+          {Array.from({length: 24}, (_, i) => i).map(h => (
+            <option key={h} value={h}>{((h%12)||12)} {h<12?'AM':'PM'}</option>
+          ))}
+        </select>
+        <span style={{color:'#65676b'}}>:</span>
+        <select value={minute} onChange={e => setMinute(+e.target.value)} style={selectSx}>
+          {Array.from({length: 60}, (_, i) => i).map(m => (
+            <option key={m} value={m}>{m.toString().padStart(2,'0')}</option>
+          ))}
+        </select>
+      </div>
+      <div style={{display:'flex', gap:6, justifyContent:'space-between', alignItems:'center'}}>
+        {onDelete ? (
+          <button className="btn ghost sm" style={{color:'#e41e3f'}} onClick={onDelete}>Delete</button>
+        ) : <span/>}
+        <div style={{display:'flex', gap:6}}>
+          <button className="btn ghost sm" onClick={onCancel}>Cancel</button>
+          <button className="btn primary sm" onClick={save}>{primaryLabel}</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function DatePickerChip({ onPick }) {
   const [open, setOpen] = usePState(false);
-  const initDate = new Date(Date.now() - 2*24*60*60*1000);
-  const [year, setYear] = usePState(initDate.getFullYear());
-  const [month, setMonth] = usePState(initDate.getMonth()); // 0-11
-  const [day, setDay] = usePState(initDate.getDate());
-  const [hour, setHour] = usePState(initDate.getHours());
-  const [minute, setMinute] = usePState(initDate.getMinutes());
   const ref = usePRef(null);
   usePEffect(() => {
     if (!open) return;
@@ -1725,22 +2007,6 @@ function DatePickerChip({ onPick }) {
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const confirm = () => {
-    const d = new Date(year, month, Math.min(day, daysInMonth), hour, minute);
-    onPick(d.toISOString());
-    setOpen(false);
-  };
-  const quickYear = (offset) => {
-    const d = new Date();
-    d.setFullYear(d.getFullYear() + offset);
-    setYear(d.getFullYear()); setMonth(d.getMonth()); setDay(d.getDate());
-  };
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const yearList = [];
-  const curYear = new Date().getFullYear();
-  for (let y = curYear; y >= curYear - 15; y--) yearList.push(y);
-  const selectSx = {padding:'7px 8px', border:'1px solid #e4e6eb', borderRadius:8, fontSize:13, background:'#fff', flex:1, minWidth:0};
   return (
     <div ref={ref} style={{position:'relative', display:'inline-block'}}>
       <button className="btn secondary sm" onClick={() => setOpen(o => !o)}>🗓 Date</button>
@@ -1751,41 +2017,12 @@ function DatePickerChip({ onPick }) {
           border:'1px solid #e4e6eb', padding:14, width:300,
         }}>
           <div style={{fontSize:13, fontWeight:700, marginBottom:10, color:'#050505'}}>Insert date separator</div>
-          <div style={{display:'flex', gap:4, marginBottom:10, flexWrap:'wrap'}}>
-            {[-1,-2,-3,-5,-10].map(y => (
-              <button key={y} className="btn ghost sm" style={{padding:'3px 8px', fontSize:11}} onClick={() => quickYear(y)}>{Math.abs(y)}y ago</button>
-            ))}
-          </div>
-          <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Date</label>
-          <div style={{display:'flex', gap:6, marginBottom:10}}>
-            <select value={month} onChange={e => setMonth(+e.target.value)} style={selectSx}>
-              {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-            </select>
-            <select value={day} onChange={e => setDay(+e.target.value)} style={{...selectSx, flex:'0 0 70px'}}>
-              {Array.from({length: daysInMonth}, (_, i) => i+1).map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <select value={year} onChange={e => setYear(+e.target.value)} style={{...selectSx, flex:'0 0 90px'}}>
-              {yearList.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-          <label style={{display:'block', fontSize:11, color:'#65676b', marginBottom:4, fontWeight:500}}>Time</label>
-          <div style={{display:'flex', gap:6, marginBottom:12, alignItems:'center'}}>
-            <select value={hour} onChange={e => setHour(+e.target.value)} style={selectSx}>
-              {Array.from({length: 24}, (_, i) => i).map(h => (
-                <option key={h} value={h}>{((h%12)||12)} {h<12?'AM':'PM'}</option>
-              ))}
-            </select>
-            <span style={{color:'#65676b'}}>:</span>
-            <select value={minute} onChange={e => setMinute(+e.target.value)} style={selectSx}>
-              {Array.from({length: 60}, (_, i) => i).map(m => (
-                <option key={m} value={m}>{m.toString().padStart(2,'0')}</option>
-              ))}
-            </select>
-          </div>
-          <div style={{display:'flex', gap:6, justifyContent:'flex-end'}}>
-            <button className="btn ghost sm" onClick={() => setOpen(false)}>Cancel</button>
-            <button className="btn primary sm" onClick={confirm}>Insert</button>
-          </div>
+          <DateTimeForm
+            showQuickYears
+            primaryLabel="Insert"
+            onSave={(iso) => { onPick(iso); setOpen(false); }}
+            onCancel={() => setOpen(false)}
+          />
         </div>
       )}
     </div>
@@ -1799,20 +2036,19 @@ function AddExtrasSection({ state, setState }) {
   };
   const addDate = (isoDateTime) => {
     const dt = isoDateTime ? new Date(isoDateTime) : new Date(Date.now() - 2*24*60*60*1000);
-    const today = new Date();
-    const diffDays = Math.floor((today.setHours(0,0,0,0) - new Date(dt).setHours(0,0,0,0)) / (24*60*60*1000));
-    const time = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }); // "4:07 PM"
-    let label;
-    if (diffDays === 0) label = `Today ${time}`;
-    else if (diffDays === 1) label = `Yesterday ${time}`;
-    else if (diffDays < 7 && diffDays > 0) {
-      // "MON AT 4:07 PM"
-      label = `${dt.toLocaleDateString('en-US', { weekday:'short' }).toUpperCase()} AT ${time}`;
-    } else {
-      // "APR 18 AT 4:07 PM"
-      label = `${dt.toLocaleDateString('en-US', { month:'short', day:'numeric' }).toUpperCase()} AT ${time}`;
+    const iso = dt.toISOString();
+    // Validate chronology vs. the last existing date separator.
+    const lastDate = [...state.messages].reverse().find(m => m.type === 'date' && m.iso);
+    if (lastDate && new Date(iso) < new Date(lastDate.iso)) {
+      const proceed = confirm(
+        `This date (${dateLabelFromIso(iso)}) is earlier than the previous separator (${lastDate.label}). Insert anyway? It will be highlighted as out of order.`
+      );
+      if (!proceed) return;
     }
-    setState(s => ({...s, messages:[...s.messages, { id:'d'+Date.now(), type:'date', label, iso: dt.toISOString() }]}));
+    setState(s => ({
+      ...s,
+      messages: [...s.messages, { id:'d'+Date.now(), type:'date', label: dateLabelFromIso(iso), iso }],
+    }));
   };
   const addReaction = () => {
     const emojis = ['❤️','😂','👍','😮','😢','🔥'];
@@ -1980,44 +2216,113 @@ function initialMessages() {
   ];
 }
 
-const STORAGE_KEY = 'messenger-clone-state-v1';
+const STORAGE_KEY = 'messenger-clone-state-v1'; // legacy localStorage key (migrated → IDB on first load)
+const DB_NAME = 'messenger-clone';
+const DB_STORE = 'state';
+const DB_KEY = 'app-state';
 
-function loadSavedState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const s = JSON.parse(raw);
-    if (!s || !s.members || !s.messages) return null;
-    return s;
-  } catch (err) { return null; }
+let _dbPromise = null;
+function openDB() {
+  if (_dbPromise) return _dbPromise;
+  _dbPromise = new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return _dbPromise;
+}
+async function idbGet(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(DB_STORE, 'readonly').objectStore(DB_STORE).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbSet(key, value) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).put(value, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbDel(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function defaultState() {
+  return {
+    members: initialMembers,
+    meId: 'u1',
+    groupName: TWEAK_DEFAULTS.groupName,
+    subtitle: TWEAK_DEFAULTS.subtitle,
+    statusTime: '9:41',
+    battery: 82,
+    network: 'wifi',
+    typingOn: TWEAK_DEFAULTS.typingOn,
+    typingBy: 'u3',
+    messages: initialMessages(),
+  };
+}
+
+function isValidState(s) {
+  return s && typeof s === 'object' && Array.isArray(s.members) && Array.isArray(s.messages);
 }
 
 function App() {
-  const [state, setState] = useAppState(() => {
-    const saved = loadSavedState();
-    if (saved) return saved;
-    return {
-      members: initialMembers,
-      meId: 'u1',
-      groupName: TWEAK_DEFAULTS.groupName,
-      subtitle: TWEAK_DEFAULTS.subtitle,
-      statusTime: '9:41',
-      battery: 82,
-      network: 'wifi',
-      typingOn: TWEAK_DEFAULTS.typingOn,
-      typingBy: 'u3',
-      messages: initialMessages(),
-    };
-  });
+  const [state, setState] = useAppState(defaultState);
+  const [hydrated, setHydrated] = useAppState(false);
 
-  // Persist entire state to localStorage on every change (debounced)
+  // Hydrate from IndexedDB on mount; migrate any legacy localStorage payload.
   useAppEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        let saved = await idbGet(DB_KEY);
+        if (!isValidState(saved)) {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (isValidState(parsed)) {
+                saved = parsed;
+                await idbSet(DB_KEY, parsed);
+                localStorage.removeItem(STORAGE_KEY);
+              }
+            }
+          } catch (e) { /* ignore migration errors */ }
+        }
+        if (!cancelled && isValidState(saved)) setState(saved);
+      } catch (err) {
+        console.warn('IDB load failed', err);
+      } finally {
+        if (!cancelled) setHydrated(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Persist to IndexedDB on change (debounced). Skip until hydration completes
+  // so we don't overwrite the saved record with the initial defaults.
+  useAppEffect(() => {
+    if (!hydrated) return;
     const id = setTimeout(() => {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-      catch (err) { console.warn('Save failed', err); }
+      idbSet(DB_KEY, state).catch(err => console.warn('IDB save failed', err));
     }, 200);
     return () => clearTimeout(id);
-  }, [state]);
+  }, [state, hydrated]);
   const [tweakMode, setTweakMode] = useAppState(false);
 
   useAppEffect(() => {
@@ -2059,6 +2364,33 @@ function App() {
     const home = el.querySelector('.home-indicator');
     const prevHome = home && home.style.display;
     if (home) home.style.display = 'none';
+    // html2canvas can't reliably read cross-origin background-image URLs (they
+    // come back blank/gray). Pre-fetch each unique remote URL as a data URL and
+    // swap it in for the duration of the capture.
+    const swapped = [];
+    const cache = new Map();
+    const bgNodes = el.querySelectorAll('[style*="background-image"]');
+    await Promise.all(Array.from(bgNodes).map(async (node) => {
+      const style = node.getAttribute('style') || '';
+      const m = style.match(/background-image:\s*url\(["']?(https?:[^"')]+)["']?\)/);
+      if (!m) return;
+      const url = m[1];
+      try {
+        if (!cache.has(url)) {
+          cache.set(url, fetch(url, { mode: 'cors' })
+            .then(r => r.blob())
+            .then(b => new Promise((res, rej) => {
+              const fr = new FileReader();
+              fr.onload = () => res(fr.result);
+              fr.onerror = rej;
+              fr.readAsDataURL(b);
+            })));
+        }
+        const dataUrl = await cache.get(url);
+        swapped.push([node, style]);
+        node.setAttribute('style', style.replace(m[0], `background-image: url(${dataUrl})`));
+      } catch (e) { /* leave as-is on failure */ }
+    }));
     // Wait a frame so the blur + selection removal takes effect
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     try {
@@ -2090,6 +2422,7 @@ function App() {
       el.style.transform = prevTransform;
       el.classList.remove('--capturing');
       if (home) home.style.display = prevHome || '';
+      swapped.forEach(([node, orig]) => node.setAttribute('style', orig));
     }
   };
 
@@ -2128,8 +2461,30 @@ function App() {
         const data = JSON.parse(ev.target.result);
         const s = data.state || data;
         if (!s.members || !s.messages) { showToast('Invalid chat file'); return; }
-        setState(cur => ({ ...cur, ...s }));
-        showToast('Chat imported ✓');
+        setState(cur => {
+          const importedById = new Map(s.members.map(m => [m.id, m]));
+          const curIds = new Set(cur.members.map(m => m.id));
+          // Upsert by id: existing members are overwritten with the imported
+          // record (so avatar/name carry over); brand-new members are appended.
+          const mergedMembers = [
+            ...cur.members.map(m => importedById.has(m.id) ? { ...m, ...importedById.get(m.id) } : m),
+            ...s.members.filter(m => !curIds.has(m.id)),
+          ];
+          const messageIds = new Set(cur.messages.map(m => m.id));
+          const mergedMessages = [
+            ...cur.messages,
+            ...s.messages.filter(m => !messageIds.has(m.id)),
+          ];
+          const { members: _m, messages: _msgs, meId: _me, ...rest } = s;
+          return {
+            ...cur,
+            ...rest,
+            members: mergedMembers,
+            messages: mergedMessages,
+            meId: cur.meId,
+          };
+        });
+        showToast('Chat merged ✓');
       } catch (err) {
         console.error(err);
         showToast('Invalid JSON');
@@ -2159,10 +2514,23 @@ function App() {
         </label>
         <button
           className="h-btn"
-          title="Wipe saved chat in this browser and restore defaults"
+          title="Clear all messages (keeps members and settings)"
           onClick={() => {
+            if (!confirm('Clear all messages and start a new clean chat? Members and settings are kept.')) return;
+            setState(s => ({ ...s, messages: [] }));
+            showToast('Chat cleared ✓');
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3V6zm3 3h12l-1.5 11.5a2 2 0 0 1-2 1.5h-5a2 2 0 0 1-2-1.5L6 9zm3-5h6v2H9V4z"/></svg>
+          New chat
+        </button>
+        <button
+          className="h-btn"
+          title="Wipe saved chat in this browser and restore defaults"
+          onClick={async () => {
             if (!confirm('This will erase the chat saved in this browser and restore the demo conversation. Continue?')) return;
-            localStorage.removeItem(STORAGE_KEY);
+            try { await idbDel(DB_KEY); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
             location.reload();
           }}
           style={{color:'#65676b'}}
